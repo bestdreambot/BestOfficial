@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BestOfficial</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --word-c1:#fff8d0; --word-c2:#fff1a8; --word-c3:#ffd558; --word-c4:#e8b840; --word-c5:#b8822c;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; margin:0; overflow:hidden; background:#000; }
+  body{ display:flex; align-items:center; justify-content:center; }
+
+  .stage{ position:relative; width:min(88vmin, 980px); aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; }
+  .stage canvas{ position:absolute; inset:0; width:100%; height:100%; }
+
+  h1{
+    position:relative; z-index:2;
+    margin:0;
+    opacity:0;
+    animation: word-in 1.6s cubic-bezier(.16,.9,.25,1) 0.15s forwards,
+               glow-pulse 7.6s ease-in-out 1.75s infinite;
+    font-family:"Alex Brush", "Segoe Script", "Brush Script MT", cursive;
+    text-transform:none; font-weight:400;
+    font-size:clamp(3.2rem, 12.5vw, 8.4rem);
+    letter-spacing:0; line-height:1; white-space:nowrap;
+    background:
+      radial-gradient(circle 5px at 20% 28%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%),
+      radial-gradient(circle 4px at 74% 62%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%),
+      linear-gradient(160deg,
+      var(--word-c1) 0%, #fffef2 6%, var(--word-c2) 14%,
+      var(--word-c4) 27%, #8a5a18 36%,
+      #fffef2 46%, var(--word-c3) 56%,
+      var(--word-c5) 68%, #7a4c1c 76%,
+      #fff6d8 86%, var(--word-c3) 94%, var(--word-c5) 100%);
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent; -webkit-text-fill-color:transparent;
+    -webkit-text-stroke: 1px rgba(50,26,0,0.85);
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    filter:
+      brightness(1.22) saturate(1.15) contrast(1.1)
+      drop-shadow(0 0 1px rgba(255,255,245,1))
+      drop-shadow(0 0 3px rgba(255,220,130,0.4))
+      drop-shadow(0 -1px 0 rgba(255,250,225,0.6))
+      drop-shadow(0 6px 14px rgba(0,0,0,0.7));
+  }
+  h1::after{
+    content: attr(data-text); position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.9) 48%, rgba(255,255,255,0.9) 52%, transparent 70%);
+    background-size:250% 100%; -webkit-background-clip:text; background-clip:text;
+    color:transparent; -webkit-text-fill-color:transparent;
+    animation: mirror-sweep 4.2s ease-in-out infinite; pointer-events:none;
+  }
+  h1::before{
+    content: attr(data-text); position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.98) 49.5%, rgba(255,255,255,0.98) 50.5%, transparent 58%);
+    background-size:320% 100%; -webkit-background-clip:text; background-clip:text;
+    color:transparent; -webkit-text-fill-color:transparent;
+    animation: specular-sweep 5.4s ease-in-out infinite; pointer-events:none;
+    mix-blend-mode: screen;
+  }
+  @keyframes mirror-sweep{ 0%{ background-position:150% 0; } 55%,100%{ background-position:-50% 0; } }
+  @keyframes specular-sweep{ 0%{ background-position:220% 0; } 45%,100%{ background-position:-90% 0; } }
+  @keyframes glow-pulse{
+    0%,100%{ filter: brightness(1.22) saturate(1.15) contrast(1.1) drop-shadow(0 0 1px rgba(255,255,245,1)) drop-shadow(0 0 3px rgba(255,220,130,0.4)) drop-shadow(0 -1px 0 rgba(255,250,225,0.6)) drop-shadow(0 6px 14px rgba(0,0,0,0.7)); }
+    50%{ filter: brightness(1.32) saturate(1.25) contrast(1.16) drop-shadow(0 0 2px rgba(255,255,245,1)) drop-shadow(0 0 6px rgba(255,220,130,0.6)) drop-shadow(0 -1px 0 rgba(255,250,225,0.75)) drop-shadow(0 6px 14px rgba(0,0,0,0.7)); }
+  }
+  h1:focus-visible{ outline: 2px solid rgba(255,220,130,0.8); outline-offset: 6px; }
+  @keyframes word-in{
+    from{ opacity:0; transform:translateY(14px) scale(0.97); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+  h1.is-best{ font-size:clamp(5rem, 20vw, 13rem); }
+  h1.is-best[data-text="Exclusive Stars"]{ font-size:clamp(3.2rem, 12.5vw, 8.4rem); }
+  h1.is-best[data-text="Past Legends"]{ font-size:clamp(3.2rem, 12.5vw, 8.4rem); }
+  h1.is-best[data-text="Finger Dance"]{ font-size:clamp(3.2rem, 12.5vw, 8.4rem); }
+  h1.is-best[data-text="Grand Show"]{ font-size:clamp(3.2rem, 12.5vw, 8.4rem); }
+  .word-flash{
+    position:absolute; inset:0; z-index:3; pointer-events:none;
+    background: radial-gradient(circle, rgba(255,250,220,0.95) 0%, rgba(255,220,130,0.4) 30%, transparent 65%);
+    opacity:0; mix-blend-mode:screen;
+  }
+  .light-streak{
+    position:absolute; inset:-20%; z-index:5; pointer-events:none;
+    background: linear-gradient(115deg, transparent 44%, rgba(255,250,235,0.55) 49.5%, rgba(255,220,150,0.4) 50.5%, transparent 56%);
+    background-size:300% 300%; background-position:-100% -100%;
+    opacity:0; mix-blend-mode:screen;
+  }
+  .tiktok-link{
+    position:fixed; left:50%; top:calc(50% + 44vmin + 14px); transform:translateX(-50%);
+    z-index:4; opacity:0; pointer-events:none; transition:opacity 0.6s ease;
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size:14px; letter-spacing:0.3px;
+    color: rgba(255,220,130,0.75); text-decoration:none;
+  }
+  .tiktok-link.show{ opacity:1; pointer-events:auto; }
+  .tiktok-link:hover, .tiktok-link:focus-visible{ color:rgba(255,230,160,0.95); text-decoration:underline; }
+  @media (prefers-reduced-motion: reduce){ .tiktok-link{ transition:none; } }
+  @supports not (background-clip: text){
+    h1{ color:#ffc928; -webkit-text-fill-color:#ffc928; background:none; }
+    h1::after, h1::before{ display:none; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    h1{ opacity:1; animation:none; }
+    h1::after, h1::before{ animation:none; }
+  }
+
+</style>
+</head>
+<body>
+  <div class="stage">
+    <canvas id="torCanvas" aria-hidden="true"></canvas>
+    <h1 data-text="BestOfficial" role="button" tabindex="0" aria-label="BestOfficial. Нажмите, чтобы изменить цвет свечения">BestOfficial</h1>
+    <div id="wordFlash" class="word-flash" aria-hidden="true"></div>
+    <div id="lightStreak" class="light-streak" aria-hidden="true"></div>
+  </div>
+  <a id="tiktokLink" class="tiktok-link" href="https://www.tiktok.com/@best.show.official" target="_blank" rel="noopener noreferrer" aria-label="BestOfficial в TikTok — @best.show.official">@best.show.official</a>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function seeded(i){ var x = Math.sin(i*12.9898)*43758.5453; return x - Math.floor(x); }
+
+  var canvas = document.getElementById('torCanvas');
+  var ctx = canvas.getContext('2d');
+  var w, h, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  function resize(){
+    w = canvas.parentElement.clientWidth; h = canvas.parentElement.clientHeight;
+    canvas.width = w*dpr; canvas.height = h*dpr;
+    canvas.style.width = w+'px'; canvas.style.height = h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  var GT_OUTER = 0.42, GT_INNER = 0.84;
+  function shades(r,g,b){
+    function mix(t){ return [Math.round(r+(255-r)*t), Math.round(g+(255-g)*t), Math.round(b+(255-b)*t)]; }
+    function dim(t){ return [Math.round(r*t), Math.round(g*t), Math.round(b*t)]; }
+    return [mix(0.55), mix(0.22), [r,g,b], dim(0.72), dim(0.42), dim(0.16)];
+  }
+  var WORLDS = {
+    freex:   [[255,255,255],[242,242,246],[214,214,222],[160,160,172],[96,96,108], [44,44,52]],
+    ya:      [[235,255,225],[190,240,170],[120,215,95], [55,150,45],  [25,85,20],  [8,35,8]],
+    best:    [[255,244,176],[255,216,74], [255,179,0],  [242,138,0],  [185,90,0],  [90,38,0]],
+    odp:     [[225,240,255],[170,210,250],[90,160,235], [40,100,190], [20,55,110], [6,18,40]],
+    tomato:  [[255,225,195],[255,150,95], [255,95,50],  [235,60,30],  [170,30,15], [80,15,10]],
+    nebula:  [[255,225,240],[220,140,255],[130,80,255], [70,40,220],  [40,20,120], [15,8,50]],
+    maroon:  [[230,140,120],[180,60,50],  [120,30,30],  [80,20,25],   [45,12,18],  [20,6,10]],
+    lavender:[[245,235,255],[200,180,255],[160,140,255],[120,100,230],[70,55,150], [30,22,70]],
+    violet:  [[255,225,255],[220,150,255],[170,80,230], [120,40,190], [65,20,110], [25,8,50]],
+    aleorix: [[255,240,255],[235,180,255],[195,90,255], [150,30,255], [95,10,200],  [35,4,70]],
+    jelly:   [[255,255,225],[255,245,120],[255,220,40], [230,180,0],  [160,120,0],  [60,45,0]],
+    valmont: [[255,225,220],[255,140,120],[255,60,40],  [220,20,10],  [140,10,5],   [50,4,2]],
+    animix:  [[250,245,255],[225,210,255],[195,175,255],[165,140,240],[110,90,180], [45,35,80]],
+    anibrox:        shades(255,60,170),
+    coffee:         shades(150,95,50),
+    detski:         shades(245,245,250),
+    dostar:         shades(45,190,190),
+    dream:          shades(60,200,90),
+    dualis:         shades(130,60,220),
+    exclusive_stars:shades(190,220,90),
+    finger_dance:   shades(255,120,140),
+    fovela:         shades(70,60,60),
+    grand_show:     shades(128,0,0),
+    isr:            shades(70,140,220),
+    moon:           shades(200,215,235),
+    nerix:          shades(255,140,40),
+    news:           shades(0,127,255),
+    noira:          shades(40,80,200),
+    past_legends:   shades(180,140,70),
+    tiretok:        shades(170,175,185),
+    tune:           shades(30,200,190),
+    vanila:         shades(250,235,200),
+    voice:          shades(130,120,220),
+    zaryum:         shades(255,105,180)
+  };
+  var WORLD_ORDER = ['freex','ya','best','odp','tomato','nebula','maroon','lavender','violet','aleorix','jelly','valmont','animix'];
+  var worldIdx = 0;
+  var transDurationMs = 1000;
+  var transMode = 'dissolve';
+  var curPalette = WORLDS.freex;
+  var transFrom = WORLDS.freex, transTo = WORLDS.freex, transStart = -1e9, lastT = 0;
+  var spinKickStart = -1e9;
+  var SPIN_KICK_MS = 700, SPIN_KICK_AMOUNT = 0.9;
+  function lerpPalette(p1, p2, p){
+    var out = [];
+    for(var i=0;i<p1.length;i++){
+      var a = p1[i], b = p2[i];
+      out.push([a[0]+(b[0]-a[0])*p, a[1]+(b[1]-a[1])*p, a[2]+(b[2]-a[2])*p]);
+    }
+    return out;
+  }
+  function easeInOutCubic(x){ return x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2; }
+  var wordEl = document.getElementById('torCanvas').parentElement.querySelector('h1');
+  canvas.style.cursor = 'pointer';
+  function nextWorld(){
+    worldIdx = (worldIdx+1) % WORLD_ORDER.length;
+    transFrom = curPalette; transTo = WORLDS[WORLD_ORDER[worldIdx]];
+    transMode = 'dissolve';
+    transDurationMs = 1500;
+    transStart = reduced ? (lastT - transDurationMs - 1) : lastT;
+    if(reduced){ draw(lastT); }
+  }
+  canvas.addEventListener('click', nextWorld);
+
+  wordEl.style.cursor = 'pointer';
+  function crossfadeSwap(el, applyChange, ms, blurPeak, zoomPeak){
+    blurPeak = blurPeak == null ? 3.5 : blurPeak;
+    zoomPeak = zoomPeak == null ? 0.035 : zoomPeak;
+    if(reduced){ applyChange(); return; }
+    el.style.transition = 'none';
+    var myToken = (el._cfToken = (el._cfToken || 0) + 1);
+    var start = null, phase = 'out';
+    function step(ts){
+      if(el._cfToken !== myToken) return;
+      if(start === null) start = ts;
+      var p = Math.min(1, (ts - start) / ms);
+      if(phase === 'out'){
+        el.style.opacity = String(1 - p);
+        el.style.filter = blurPeak ? ('blur('+(p*blurPeak).toFixed(2)+'px)') : '';
+        if(p >= 1){ applyChange(); phase = 'in'; start = null; }
+        requestAnimationFrame(step);
+      } else {
+        el.style.opacity = String(p);
+        el.style.filter = blurPeak ? ('blur('+((1-p)*blurPeak).toFixed(2)+'px)') : '';
+        el.style.transform = zoomPeak ? ('scale('+(1 + zoomPeak*Math.sin(p*Math.PI)).toFixed(4)+')') : '';
+        if(p < 1){ requestAnimationFrame(step); } else { el.style.opacity = '1'; el.style.filter = ''; el.style.transform = ''; }
+      }
+    }
+    requestAnimationFrame(step);
+  }
+  function flashPulse(el, ms, peak){
+    if(reduced) return;
+    var start = null;
+    function step(ts){
+      if(start === null) start = ts;
+      var p = Math.min(1, (ts - start) / ms);
+      var v = (p < 0.5 ? (p/0.5) : (1 - (p-0.5)/0.5)) * peak;
+      el.style.opacity = String(v);
+      if(p < 1){ requestAnimationFrame(step); } else { el.style.opacity = '0'; }
+    }
+    requestAnimationFrame(step);
+  }
+  function streakSweep(el, ms){
+    if(reduced) return;
+    el.style.opacity = '1';
+    var start = null;
+    function step(ts){
+      if(start === null) start = ts;
+      var p = Math.min(1, (ts - start) / ms);
+      var pos = (-100 + p*200).toFixed(2);
+      el.style.backgroundPosition = pos+'% '+pos+'%';
+      if(p < 1){ requestAnimationFrame(step); } else { el.style.opacity = '0'; }
+    }
+    requestAnimationFrame(step);
+  }
+  var tiktokEl = document.getElementById('tiktokLink');
+  var flashEl = document.getElementById('wordFlash');
+  var streakEl = document.getElementById('lightStreak');
+  var WORD_FX = {
+    gold_enter:  { blur:3.5, zoom:0.035, flash:0.6, flashMs:300, streakMs:600 },
+    soft_only:   { blur:3.5, zoom:0,     flash:0,   flashMs:0,   streakMs:0   },
+    flash_warm:  { blur:2.2, zoom:0.02,  flash:0.5, flashMs:220, streakMs:0   },
+    no_fx:       { blur:0,   zoom:0,     flash:0,   flashMs:0,   streakMs:0, instant:true },
+    streak_only: { blur:2.2, zoom:0,     flash:0,   flashMs:0,   streakMs:650 }
+  };
+  var PROJECTS = [
+    { word:'Best',            aria:'Best. Проект.',            world:'best',            tiktok:'best.show.official', ring:'portal',   ringMs:1000, fx:'gold_enter'  },
+    { word:'Aleorix',         aria:'Aleorix. Проект.',         world:'aleorix',         tiktok:'aleorix0',           ring:'dissolve', ringMs:1300, fx:'soft_only'   },
+    { word:'Jelly',           aria:'Jelly. Проект.',           world:'jelly',           tiktok:'jelly.show',         ring:'wipe',     ringMs:1100, fx:'flash_warm'  },
+    { word:'Valmont',         aria:'Valmont. Проект.',         world:'valmont',         tiktok:'best.valmont.man',   ring:'burst',    ringMs:900,  fx:'no_fx'       },
+    { word:'Animix',          aria:'Animix. Проект.',          world:'animix',          tiktok:'best.anime.show',    ring:'spiral',   ringMs:1200, fx:'streak_only' },
+    { word:'Anibrox',         aria:'Anibrox. Проект.',         world:'anibrox',         tiktok:'best.anibrox.show',  ring:'portal',   ringMs:1000, fx:'soft_only'   },
+    { word:'Coffee',          aria:'Coffee. Проект.',          world:'coffee',          tiktok:'best.cofee.show',    ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
+    { word:'Detski',          aria:'Detski. Проект.',          world:'detski',          tiktok:'best.children.show', ring:'wipe',     ringMs:1100, fx:'no_fx'       },
+    { word:'Dostar',          aria:'Dostar. Проект.',          world:'dostar',          tiktok:'best.dostart.show',  ring:'burst',    ringMs:900,  fx:'streak_only' },
+    { word:'Dream',           aria:'Dream. Проект.',           world:'dream',           tiktok:'best.dream.show',    ring:'portal',   ringMs:1000, fx:'soft_only'   },
+    { word:'Dualis',          aria:'Dualis. Проект.',          world:'dualis',          tiktok:'best.duet.show',     ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
+    { word:'Exclusive Stars', aria:'Exclusive Stars. Проект.', world:'exclusive_stars', tiktok:'best.exclusive.stars', ring:'wipe',   ringMs:1100, fx:'no_fx'       },
+    { word:'Finger Dance',    aria:'Finger Dance. Проект.',    world:'finger_dance',    tiktok:'best.finger.dance',  ring:'burst',    ringMs:900,  fx:'streak_only' },
+    { word:'Fovela',          aria:'Fovela. Проект.',          world:'fovela',          tiktok:'best_fovela',        ring:'spiral',   ringMs:1200, fx:'gold_enter'  },
+    { word:'Grand Show',      aria:'Grand Show. Проект.',      world:'grand_show',      tiktok:'best.grand.show',    ring:'portal',   ringMs:1000, fx:'soft_only'   },
+    { word:'ISR',             aria:'ISR. Проект.',             world:'isr',             tiktok:'best.isr.show',      ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
+    { word:'Moon',            aria:'Moon. Проект.',            world:'moon',            tiktok:'best.moon.show',     ring:'wipe',     ringMs:1100, fx:'no_fx'       },
+    { word:'Nerix',           aria:'Nerix. Проект.',           world:'nerix',           tiktok:'best.comedy.show',   ring:'burst',    ringMs:900,  fx:'streak_only' },
+    { word:'News',            aria:'News. Проект.',            world:'news',            tiktok:'best.news.show',     ring:'spiral',   ringMs:1200, fx:'gold_enter'  },
+    { word:'Past Legends',    aria:'Past Legends. Проект.',    world:'past_legends',    tiktok:'best.past.legends',  ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
+    { word:'Tiretok',         aria:'Tiretok. Проект.',         world:'tiretok',         tiktok:'best.tiretok',       ring:'wipe',     ringMs:1100, fx:'no_fx'       },
+    { word:'Tune',            aria:'Tune. Проект.',            world:'tune',            tiktok:'best.tune.show',     ring:'burst',    ringMs:900,  fx:'streak_only' },
+    { word:'Vanila',          aria:'Vanila. Проект.',          world:'vanila',          tiktok:'best.vanila.show',   ring:'spiral',   ringMs:1200, fx:'gold_enter'  },
+    { word:'Voice',           aria:'Voice. Проект.',           world:'voice',           tiktok:'best.voice.show',    ring:'portal',   ringMs:1000, fx:'soft_only'   },
+    { word:'Noira',           aria:'Noira. Проект.',           world:'noira',           tiktok:null,                 ring:'wipe',     ringMs:1100, fx:'no_fx',
+      link:{ url:'https://youtube.com/playlist?list=PLuaNqEUb7SmXUdZlHeY4HgbE29TWwfTiW&si=1K-pyHfJoyT9eOG5', label:'Noira на YouTube', aria:'Noira на YouTube' } },
+    { word:'Zaryum',          aria:'Zaryum. Проект.',          world:'zaryum',          tiktok:null,                 ring:'dissolve', ringMs:1300, fx:'flash_warm',
+      link:{ url:'https://youtube.com/playlist?list=PLuaNqEUb7SmVnWfr6seNIC_8uMPZSc-Xd&si=-vuaO4UCriYOpILv', label:'Zaryum на YouTube', aria:'Zaryum на YouTube' } }
+  ];
+  var wordState = 0;
+  function enterWord(text, ariaLabel, world, linkInfo, mode, durationMs, fxName){
+    var fx = WORD_FX[fxName] || WORD_FX.soft_only;
+    function applyChange(){
+      wordEl.textContent = text;
+      wordEl.setAttribute('data-text', text);
+      wordEl.setAttribute('aria-label', ariaLabel);
+      wordEl.classList.add('is-best');
+      if(fx.flash > 0){ flashPulse(flashEl, fx.flashMs, fx.flash); }
+      if(fx.streakMs > 0){ streakSweep(streakEl, fx.streakMs); }
+      if(linkInfo){
+        tiktokEl.href = linkInfo.url;
+        tiktokEl.textContent = linkInfo.label;
+        tiktokEl.setAttribute('aria-label', linkInfo.aria);
+      } else {
+        tiktokEl.classList.remove('show');
+      }
+    }
+    if(fx.instant || reduced){ applyChange(); } else { crossfadeSwap(wordEl, applyChange, 400, fx.blur, fx.zoom); }
+    if(linkInfo){
+      setTimeout(function(){ tiktokEl.classList.add('show'); }, (reduced || fx.instant) ? 0 : 500);
+    }
+    worldIdx = WORLD_ORDER.indexOf(world);
+    transFrom = curPalette; transTo = WORLDS[world];
+    transMode = mode;
+    transDurationMs = durationMs;
+    transStart = reduced ? (lastT - transDurationMs - 1) : lastT;
+    settleStart = reduced ? -1e9 : lastT;
+    if(reduced){ draw(lastT); }
+  }
+  function onWordActivate(){
+    if(wordState >= PROJECTS.length) return;
+    var proj = PROJECTS[wordState];
+    wordState++;
+    var linkInfo = proj.link ? proj.link
+      : proj.tiktok ? { url:'https://www.tiktok.com/@'+proj.tiktok, label:'@'+proj.tiktok, aria:proj.word+' в TikTok — @'+proj.tiktok }
+      : null;
+    enterWord(proj.word, proj.aria, proj.world, linkInfo, proj.ring, proj.ringMs, proj.fx);
+  }
+  wordEl.addEventListener('click', onWordActivate);
+  wordEl.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); onWordActivate(); }
+  });
+
+  var P_N = reduced ? 260 : 2200;
+  var particles = [];
+  for(var pi=0; pi<P_N; pi++){
+    var band = (seeded(pi*5+1) + seeded(pi*5+2) + seeded(pi*5+3) + seeded(pi*5+4))/4;
+    particles.push({
+      angle0: seeded(pi*5+11)*Math.PI*2,
+      radiusU: band,
+      speed: 0.00006 + seeded(pi*5+13)*0.00004,
+      size: seeded(pi*5+17) > 0.92 ? (1.6+seeded(pi*5+19)*1.6) : (0.5+seeded(pi*5+19)*0.9),
+      twPhase: seeded(pi*5+23)*Math.PI*2,
+      twSpeed: 0.0006+seeded(pi*5+29)*0.0012,
+      colorBias: seeded(pi*5+31),
+      gem: seeded(pi*5+37) > 0.975
+    });
+  }
+  var LOAD_T = null;
+  var settleStart = -1e9, SETTLE_MS = 600;
+
+  function draw(t){
+    lastT = t;
+    if(LOAD_T === null){ LOAD_T = t; }
+    var transP = Math.min(1, (t - transStart) / transDurationMs);
+    var easedP = easeInOutCubic(transP);
+    curPalette = transP >= 1 ? transTo : lerpPalette(transFrom, transTo, easedP);
+    ctx.clearRect(0,0,w,h);
+    var cx=w/2, cy=h/2, minDim = Math.min(w,h);
+    var outerR = minDim*GT_OUTER, innerR = outerR*GT_INNER;
+    var bandHalf = (outerR-innerR)/2;
+    var ringR = innerR + bandHalf;
+    var breathePhase = ((t - 1750 - 3800) / 7600) * Math.PI * 2;
+    ringR = ringR * (1 + 0.04*Math.cos(breathePhase));
+    var revealP = Math.min(1, (t - LOAD_T) / 1100);
+    var revealMul = reduced ? 1 : (1 - Math.pow(1 - revealP, 3));
+    var settleP = Math.min(1, (t - settleStart) / SETTLE_MS);
+    var speedMul = settleP < 1 ? (1.25 - 0.25*settleP) : 1;
+    var spread = bandHalf*3.4;
+
+    var portalActive = transMode === 'portal' && transP < 1;
+    var frontAngle = transP * Math.PI * 2;
+    var FRONT_WIDTH = 0.65;
+    var globalDim = portalActive ? 1 - 0.13*Math.sin(transP*Math.PI) : 1;
+    var dissolveActive = transMode === 'dissolve' && transP < 1;
+    var dissolvePal = dissolveActive ? lerpPalette(transFrom, transTo, easedP) : null;
+    var wipeActive = transMode === 'wipe' && transP < 1;
+    var wipeFrontAngle = easedP * Math.PI * 2;
+    var WIPE_FEATHER = 1.3;
+    var burstActive = transMode === 'burst' && transP < 1;
+    var burstBell = burstActive ? Math.sin(transP*Math.PI) : 0;
+    var spiralActive = transMode === 'spiral' && transP < 1;
+    var spiralFrontAngle = easedP * Math.PI * 2;
+    var SPIRAL_FEATHER = 1.1;
+    var SPIRAL_TWIST = 1.4;
+    ctx.save();
+    particles.forEach(function(p){
+      var r = ringR + (p.radiusU-0.5)*2*spread;
+      if (r < innerR*0.15) return;
+      if(burstActive){ r *= (1 + 0.3*burstBell); }
+      var angSpeed = p.speed * speedMul * (ringR/Math.max(r, ringR*0.3));
+      var ang = p.angle0 + t*angSpeed;
+      var pal, alphaMul = 1, angPull = 0, sizeMul = 1;
+      if(portalActive){
+        var a2 = ((ang + Math.PI/2) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
+        var dist = Math.abs(a2 - frontAngle);
+        var trough = Math.max(0, 1 - dist/FRONT_WIDTH);
+        alphaMul = globalDim * (1 - 0.85*trough);
+        angPull = (a2 > frontAngle ? -1 : 1) * 0.05 * trough;
+        if(transP > 0.75 && trough > 0.9 && p.colorBias > 0.985){
+          sizeMul = 1 + 1.6*trough; alphaMul = 1;
+        }
+        pal = a2 <= frontAngle ? transTo : transFrom;
+      } else if(dissolveActive){
+        pal = dissolvePal;
+      } else if(wipeActive){
+        var a2w = ((ang + Math.PI/2) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
+        var localPw = Math.max(0, Math.min(1, (wipeFrontAngle - a2w)/WIPE_FEATHER + 1));
+        pal = localPw >= 1 ? transTo : (localPw <= 0 ? transFrom : lerpPalette(transFrom, transTo, localPw));
+      } else if(burstActive){
+        pal = transP < 0.5 ? transFrom : transTo;
+      } else if(spiralActive){
+        var a2s = ((ang + Math.PI/2) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
+        var twisted = a2s + (p.radiusU - 0.5) * SPIRAL_TWIST;
+        var localPs = Math.max(0, Math.min(1, (spiralFrontAngle - twisted)/SPIRAL_FEATHER + 1));
+        pal = localPs >= 1 ? transTo : (localPs <= 0 ? transFrom : lerpPalette(transFrom, transTo, localPs));
+      } else {
+        pal = transTo;
+      }
+      ang += angPull;
+      var x = cx + Math.cos(ang)*r, y = cy + Math.sin(ang)*r*0.985;
+      var tw = 0.5 + 0.5*Math.max(0, Math.sin(t*p.twSpeed + p.twPhase));
+      var closeness = 1 - Math.min(1, Math.abs(r-ringR)/spread);
+      var depthF = (Math.sin(ang)+1)/2;
+      sizeMul *= (0.85 + 0.3*depthF);
+      alphaMul *= (0.8 + 0.35*depthF);
+      if(p.gem && transTo === WORLDS.best){ sizeMul *= 1.9; alphaMul = Math.min(1, alphaMul*1.4); }
+      var idx = (p.colorBias*0.4 + (1-closeness)*0.6) * (pal.length-1);
+      var i0 = Math.floor(idx), i1 = Math.min(pal.length-1, i0+1), fp = idx-i0;
+      var a = pal[i0], b = pal[i1];
+      var r0 = Math.round(a[0]+(b[0]-a[0])*fp);
+      var g0 = Math.round(a[1]+(b[1]-a[1])*fp);
+      var b0 = Math.round(a[2]+(b[2]-a[2])*fp);
+      var alpha = Math.min(1, (0.22 + 0.85*closeness) * (0.55+0.45*tw)) * alphaMul * revealMul;
+      ctx.fillStyle = 'rgba('+r0+','+g0+','+b0+','+alpha.toFixed(3)+')';
+      ctx.beginPath(); ctx.arc(x,y,p.size*sizeMul,0,Math.PI*2); ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  if(reduced){
+    draw(0);
+  } else {
+    var rafId = null;
+    function loop(t){ draw(t); rafId = requestAnimationFrame(loop); }
+    rafId = requestAnimationFrame(loop);
+    document.addEventListener('visibilitychange', function(){
+      if(document.hidden){ if(rafId){ cancelAnimationFrame(rafId); rafId = null; } }
+      else if(!rafId){ rafId = requestAnimationFrame(loop); }
+    });
+  }
+})();
+</script>
+</body>
+</html>
