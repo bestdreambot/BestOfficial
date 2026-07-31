@@ -1,0 +1,78 @@
+:root{
+  --word-c1:#fff8d0; --word-c2:#fff1a8; --word-c3:#ffd558; --word-c4:#e8b840; --word-c5:#b8822c;
+}
+h1{
+  position:relative; z-index:2;
+  margin:0;
+  opacity:0;
+  /* Слово кликабельно (role="button"), не текст для чтения — без этого двойной клик/протаскивание
+     выделяет текст, и синяя подсветка выделения браузера видна поверх прозрачной golden-заливки
+     (background-clip:text делает саму букву прозрачной, а подсветку выделения — нет). */
+  -webkit-user-select:none; user-select:none;
+  animation: word-in 1.6s cubic-bezier(.16,.9,.25,1) 0.15s forwards,
+             glow-pulse 7.6s ease-in-out 1.75s infinite;
+  font-family:"Alex Brush", "Segoe Script", "Brush Script MT", cursive;
+  text-transform:none; font-weight:400;
+  font-size:clamp(3.2rem, 12.5vw, 8.4rem);
+  letter-spacing:0; line-height:1; white-space:nowrap;
+  background:
+    radial-gradient(circle 5px at 20% 28%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%),
+    radial-gradient(circle 4px at 74% 62%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%),
+    linear-gradient(160deg,
+    var(--word-c1) 0%, #fffef2 6%, var(--word-c2) 14%,
+    var(--word-c4) 27%, #8a5a18 36%,
+    #fffef2 46%, var(--word-c3) 56%,
+    var(--word-c5) 68%, #7a4c1c 76%,
+    #fff6d8 86%, var(--word-c3) 94%, var(--word-c5) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+  -webkit-text-stroke: 1px rgba(50,26,0,0.85);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  filter:
+    brightness(1.22) saturate(1.15) contrast(1.1)
+    drop-shadow(0 0 1px rgba(255,255,245,1))
+    drop-shadow(0 0 3px rgba(255,220,130,0.4))
+    drop-shadow(0 -1px 0 rgba(255,250,225,0.6))
+    drop-shadow(0 6px 14px rgba(0,0,0,0.7));
+}
+h1::after{
+  content: attr(data-text); position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.9) 48%, rgba(255,255,255,0.9) 52%, transparent 70%);
+  background-size:250% 100%; -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+  animation: mirror-sweep 4.2s ease-in-out infinite; pointer-events:none;
+}
+h1::before{
+  content: attr(data-text); position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.98) 49.5%, rgba(255,255,255,0.98) 50.5%, transparent 58%);
+  background-size:320% 100%; -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+  animation: specular-sweep 5.4s ease-in-out infinite; pointer-events:none;
+  mix-blend-mode: screen;
+}
+@keyframes mirror-sweep{ 0%{ background-position:150% 0; } 55%,100%{ background-position:-50% 0; } }
+@keyframes specular-sweep{ 0%{ background-position:220% 0; } 45%,100%{ background-position:-90% 0; } }
+@keyframes glow-pulse{
+  0%,100%{ filter: brightness(1.22) saturate(1.15) contrast(1.1) drop-shadow(0 0 1px rgba(255,255,245,1)) drop-shadow(0 0 3px rgba(255,220,130,0.4)) drop-shadow(0 -1px 0 rgba(255,250,225,0.6)) drop-shadow(0 6px 14px rgba(0,0,0,0.7)); }
+  50%{ filter: brightness(1.32) saturate(1.25) contrast(1.16) drop-shadow(0 0 2px rgba(255,255,245,1)) drop-shadow(0 0 6px rgba(255,220,130,0.6)) drop-shadow(0 -1px 0 rgba(255,250,225,0.75)) drop-shadow(0 6px 14px rgba(0,0,0,0.7)); }
+}
+h1:focus-visible{ outline: 2px solid rgba(255,220,130,0.8); outline-offset: 6px; }
+@keyframes word-in{
+  from{ opacity:0; transform:translateY(14px) scale(0.97); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+h1.is-best{ font-size:clamp(5rem, 20vw, 13rem); }
+h1.is-best[data-text="Exclusive Stars"]{ font-size:clamp(3.2rem, 12.5vw, 8.4rem); }
+h1.is-best[data-text="Past Legends"]{ font-size:clamp(3.2rem, 12.5vw, 8.4rem); }
+h1.is-best[data-text="Finger Dance"]{ font-size:clamp(3.2rem, 12.5vw, 8.4rem); }
+h1.is-best[data-text="Grand Show"]{ font-size:clamp(3.2rem, 12.5vw, 8.4rem); }
+@supports not (background-clip: text){
+  h1{ color:#ffc928; -webkit-text-fill-color:#ffc928; background:none; }
+  h1::after, h1::before{ display:none; }
+}
+@media (prefers-reduced-motion: reduce){
+  h1{ opacity:1; animation:none; }
+  h1::after, h1::before{ animation:none; }
+}

@@ -1,0 +1,69 @@
+/* Участники — приватная панель, видна только в мастерской (127.0.0.1), появляется только на шаге
+   Best. Реальные люди команды BEST — сознательно не переносить в .deploy-bestofficial/. */
+/* Слоты по бокам от имени/адреса — 3 слева, 3 справа (Создатель, 31.07.2026): каркас под будущие
+   кнопки, чтобы решать логически по одной, а не гадать все сразу. Пустые .meta-slot ничего не
+   делают и никуда не ведут — просто держат место в ряду. */
+.meta-left, .meta-right{
+  display:flex; align-items:center; gap:10px; white-space:nowrap;
+}
+.meta-slot{
+  width:10px; height:10px; border-radius:50%;
+  border:1px dashed rgba(255,220,130,0.22);
+}
+.participants-link{
+  white-space:nowrap;
+  opacity:0; pointer-events:none; transition:opacity 0.6s ease;
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  font-size:13px; letter-spacing:0.3px; cursor:pointer;
+  color: rgba(255,220,130,0.55); background:transparent;
+  border:1px solid rgba(255,220,130,0.28); border-radius:100px; padding:5px 14px;
+}
+.participants-link.show{ opacity:1; pointer-events:auto; }
+.participants-link:hover, .participants-link:focus-visible{ color:rgba(255,230,160,0.95); border-color:rgba(255,220,130,0.55); }
+.participants-link.active{ color:#0c0b10; background:rgba(255,213,88,0.9); border-color:rgba(255,213,88,0.9); }
+@media (prefers-reduced-motion: reduce){ .participants-link{ transition:none; } }
+
+.participants-panel{
+  position:fixed; inset:0; z-index:10; display:flex; align-items:center; justify-content:center;
+  padding:24px; opacity:0; pointer-events:none; transition:opacity 0.3s ease;
+}
+.participants-panel.open{ opacity:1; pointer-events:auto; }
+@media (prefers-reduced-motion: reduce){ .participants-panel{ transition:none; } }
+.participants-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,0.82); backdrop-filter:blur(6px); }
+.participants-card{
+  position:relative; z-index:1; max-width:900px; width:100%; max-height:86vh; overflow-y:auto;
+  background:#0c0b10; border:1px solid rgba(255,220,130,0.18); border-radius:18px;
+  padding:32px clamp(18px,4vw,40px) 28px;
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif; color:#ece6d8;
+}
+.participants-close{
+  position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:50%;
+  border:1px solid rgba(255,220,130,0.25); background:transparent; color:rgba(255,220,130,0.7);
+  font-size:18px; line-height:1; cursor:pointer;
+}
+.participants-close:hover{ color:#ffd558; border-color:rgba(255,220,130,0.5); }
+.participants-eyebrow{ margin:0 0 10px; font-size:10.5px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(255,220,130,0.4); text-align:center; }
+.participants-card h2{
+  margin:0 0 6px; text-align:center; font-family:"Alex Brush","Segoe Script",cursive; font-weight:400;
+  font-size:clamp(2.2rem,6vw,3.4rem); color:#ffd558; text-shadow:0 0 24px rgba(255,213,88,0.25);
+}
+.participants-sub{ margin:0 0 24px; text-align:center; font-size:12.5px; color:rgba(236,230,216,0.55); }
+.participants-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; }
+.p-card{
+  background:#141319; border:1px solid rgba(255,220,130,0.12); border-radius:14px;
+  padding:18px 14px 16px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;
+}
+.p-card.unconfirmed{ border-style:dashed; border-color:rgba(140,147,160,0.35); }
+.p-ring{ width:64px; height:64px; border-radius:50%; padding:3px; background:conic-gradient(from 200deg,#8a6a1c,#ffd558,#e8b840,#8a6a1c); }
+.p-card.unconfirmed .p-ring{ background:repeating-conic-gradient(from 0deg, rgba(140,147,160,0.6) 0deg 18deg, transparent 18deg 36deg); }
+.p-ring-inner{ width:100%; height:100%; border-radius:50%; background:#0c0b10; display:flex; align-items:center; justify-content:center; font-family:Georgia,serif; font-size:20px; color:#ffd558; overflow:hidden; }
+.p-ring-inner img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.p-card.unconfirmed .p-ring-inner{ color:#8c93a0; }
+.p-name{ font-size:14.5px; font-weight:600; }
+.p-nick{ font-size:11px; font-style:italic; color:rgba(236,230,216,0.5); margin-top:-4px; }
+.p-role{ font-size:9.5px; letter-spacing:0.05em; text-transform:uppercase; color:#ffd558; background:rgba(255,213,88,0.08); border:1px solid rgba(255,213,88,0.22); padding:2px 8px; border-radius:100px; }
+.p-card.unconfirmed .p-role{ color:#c98a4c; background:rgba(201,138,76,0.1); border-color:rgba(201,138,76,0.3); }
+.p-handle{ font-family:ui-monospace,Consolas,monospace; font-size:11px; color:rgba(236,230,216,0.55); text-decoration:none; padding:3px 9px; border:1px solid rgba(255,220,130,0.14); border-radius:100px; }
+.p-handle:hover{ color:#ffd558; border-color:rgba(255,220,130,0.4); }
+.p-clips{ font-family:ui-monospace,Consolas,monospace; font-size:10px; color:rgba(236,230,216,0.35); }
+.participants-foot{ margin-top:22px; text-align:center; font-size:10.5px; color:rgba(236,230,216,0.3); }
