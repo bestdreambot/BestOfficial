@@ -79,6 +79,7 @@ function enterParticipant(idx){
 function toggleParticipantsMode(){
   participantsMode = !participantsMode;
   participantsBtn.classList.toggle('active', participantsMode);
+  participantsBtn.setAttribute('aria-pressed', String(participantsMode));
   if(participantsMode){
     wordEl.style.transition = reduced ? 'none' : 'opacity 0.4s ease';
     wordEl.style.opacity = '0';

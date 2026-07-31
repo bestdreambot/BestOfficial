@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#000000">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
@@ -27,7 +30,7 @@
     <span id="participantName" class="participant-name"></span>
     <a id="tiktokLink" class="tiktok-link" href="https://www.tiktok.com/@best.show.official" target="_blank" rel="noopener noreferrer" aria-label="BestOfficial в TikTok — @best.show.official">TikTok</a>
     <div class="meta-right">
-      <button id="participantsBtn" class="participants-link" type="button" aria-haspopup="dialog" aria-controls="participantsPanel">Участники</button>
+      <button id="participantsBtn" class="participants-link" type="button" aria-pressed="false">Участники</button>
       <button id="bestBtn" class="participants-link" type="button" aria-label="Вернуться на главную страницу Best">Best</button>
     </div>
   </div>
@@ -35,11 +38,11 @@
     <div class="participants-backdrop" data-close></div>
     <div class="participants-card">
       <button class="participants-close" type="button" aria-label="Закрыть">×</button>
-      <p class="participants-eyebrow">TikTok · Telegram · приватно</p>
+      <p class="participants-eyebrow">TikTok · Telegram</p>
       <h2 id="participantsTitle">Участники</h2>
       <p class="participants-sub">@best.show.official · 397 подписчиков · 9&nbsp;018 лайков · 25 в Telegram · 121 видео</p>
       <div class="participants-grid" id="participantsGrid"></div>
-      <p class="participants-foot">v1.3 · не публикуется · клик по @нику открывает TikTok</p>
+      <p class="participants-foot">Клик по @нику открывает TikTok</p>
     </div>
   </div>
 
