@@ -39,6 +39,10 @@ body{ display:flex; align-items:center; justify-content:center; }
 .meta-row{
   position:fixed; left:50%; top:calc(50% + 44vmin + 14px); transform:translateX(-50%);
   z-index:4; display:flex; align-items:center; gap:14px; white-space:nowrap;
+  /* Узкие окна (Telegram Mini App на десктопе, iPhone) без этого прижимают крайние кнопки
+     к самому краю экрана — небольшой отступ + safe-area для вырезов/панелей. */
+  padding-left: max(10px, env(safe-area-inset-left));
+  padding-right: max(10px, env(safe-area-inset-right));
 }
 .tiktok-link{
   display:inline-flex; align-items:center; min-height:44px; padding:5px 4px;

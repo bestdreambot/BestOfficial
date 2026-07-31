@@ -1,12 +1,26 @@
 // Открыт как Telegram Mini App (Создатель, 31.07.2026) — за пределами Telegram window.Telegram
 // не существует, поэтому здесь ничего не ломается.
-if (window.Telegram && window.Telegram.WebApp) {
-  Telegram.WebApp.ready();
-  Telegram.WebApp.expand();
+var tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  if (tg.setHeaderColor) tg.setHeaderColor('#000000');
+  if (tg.setBackgroundColor) tg.setBackgroundColor('#000000');
+  // iOS иногда схлопывает Mini App обратно — просим развернуть снова при каждом изменении вьюпорта.
+  tg.onEvent('viewportChanged', function(){ tg.expand(); });
 }
+function tgHaptic(){ if(tg && tg.HapticFeedback){ tg.HapticFeedback.impactOccurred('light'); } }
 var wordEl = document.getElementById('torCanvas').parentElement.querySelector('h1');
 wordEl.style.cursor = 'pointer';
 var tiktokEl = document.getElementById('tiktokLink');
+if (tg) {
+  // Внутри Telegram (особенно iOS) обычный target="_blank" иногда просто съедается —
+  // Mini App API просит открывать внешние ссылки через свой openLink.
+  tiktokEl.addEventListener('click', function(e){
+    e.preventDefault();
+    tg.openLink(tiktokEl.href);
+  });
+}
 var flashEl = document.getElementById('wordFlash');
 var streakEl = document.getElementById('lightStreak');
 var photoEl = document.getElementById('participantPhoto');
@@ -83,6 +97,7 @@ function enterParticipant(idx){
   if(reduced){ draw(lastT); }
 }
 function toggleParticipantsMode(){
+  tgHaptic();
   participantsMode = !participantsMode;
   participantsBtn.classList.toggle('active', participantsMode);
   participantsBtn.setAttribute('aria-pressed', String(participantsMode));
@@ -148,6 +163,7 @@ var bestBtn = document.getElementById('bestBtn');
 var participantsPanel = document.getElementById('participantsPanel');
 function goHome(){
   if(participantsMode){ toggleParticipantsMode(); return; }
+  tgHaptic();
   if(wordState !== 1){ activateProject(0); }
 }
 function openParticipants(){
@@ -165,6 +181,7 @@ participantsPanel.querySelector('.participants-close').addEventListener('click',
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeParticipants(); });
 
 function onWordActivate(){
+  tgHaptic();
   if(participantsMode){
     participantIdx = (participantIdx + 1) % PARTICIPANT_CHAIN.length;
     enterParticipant(participantIdx);
