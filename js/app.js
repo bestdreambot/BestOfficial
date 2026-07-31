@@ -45,7 +45,7 @@ var participantsMode = false, participantIdx = 0;
 function enterParticipant(idx){
   var p = PARTICIPANT_CHAIN[idx];
   var fx = WORD_FX[p.fx] || WORD_FX.soft_only;
-  var linkInfo = { url:'https://www.tiktok.com/@'+p.handle, label:'@'+p.handle, aria:p.word+' в TikTok — @'+p.handle };
+  var linkInfo = { url:'https://www.tiktok.com/@'+p.handle, label:'TikTok', aria:p.word+' в TikTok — @'+p.handle };
   function applyChange(){
     photoEl.src = PARTICIPANT_PHOTOS[p.photo];
     photoEl.classList.toggle('leader', !!p.leader);
@@ -95,7 +95,7 @@ function toggleParticipantsMode(){
     badgeEl.classList.remove('show');
     wordEl.style.opacity = '1';
     var best = PROJECTS[0];
-    var linkInfo = best.tiktok ? { url:'https://www.tiktok.com/@'+best.tiktok, label:'@'+best.tiktok, aria:best.word+' в TikTok — @'+best.tiktok } : null;
+    var linkInfo = best.tiktok ? { url:'https://www.tiktok.com/@'+best.tiktok, label:'TikTok', aria:best.word+' в TikTok — @'+best.tiktok } : null;
     enterWord(best.word, best.aria, best.world, linkInfo, best.ring, best.ringMs, best.fx);
     bestBtn.classList.remove('show');
     participantsBtn.classList.add('show');
@@ -105,7 +105,7 @@ function activateProject(i){
   var proj = PROJECTS[i];
   wordState = i + 1;
   var linkInfo = proj.link ? proj.link
-    : proj.tiktok ? { url:'https://www.tiktok.com/@'+proj.tiktok, label:'@'+proj.tiktok, aria:proj.word+' в TikTok — @'+proj.tiktok }
+    : proj.tiktok ? { url:'https://www.tiktok.com/@'+proj.tiktok, label:'TikTok', aria:proj.word+' в TikTok — @'+proj.tiktok }
     : null;
   enterWord(proj.word, proj.aria, proj.world, linkInfo, proj.ring, proj.ringMs, proj.fx);
   if(proj.word === 'Best'){

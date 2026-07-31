@@ -48,8 +48,8 @@ PARTICIPANT_CHAIN.forEach(function(p, i){
   p.ringMs = 1000 + (i % 3) * 150;
 });
 // Фото участников — вынесены из base64 в HTML в отдельные файлы (аудит Grok 31.07.2026, «облегчить
-// HTML»: 93% веса freexofficial.html было именно этими 15 фото). Мастерская only — не публиковать
-// в .deploy-bestofficial без прямого слова Создателя.
+// HTML»: 93% веса freexofficial.html было именно этими 15 фото). С релиза 1.4 (31.07.2026) — публичны
+// и на bestofficial.vercel.app: все фото официальные, с TikTok, прятать нечего (прямое слово Создателя).
 var PARTICIPANT_PHOTOS = {
   marina:'photos/marina.jpg',
   sasha:'photos/sasha.jpg',
