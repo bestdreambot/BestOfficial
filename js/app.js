@@ -1,3 +1,9 @@
+// Открыт как Telegram Mini App (Создатель, 31.07.2026) — за пределами Telegram window.Telegram
+// не существует, поэтому здесь ничего не ломается.
+if (window.Telegram && window.Telegram.WebApp) {
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+}
 var wordEl = document.getElementById('torCanvas').parentElement.querySelector('h1');
 wordEl.style.cursor = 'pointer';
 var tiktokEl = document.getElementById('tiktokLink');
