@@ -13,6 +13,60 @@ function resize(){
 window.addEventListener('resize', resize);
 resize();
 
+// FOM2 — младший static-тор («Звёзды» / «Best», см. .agents/совет/FOM2-STATIC-TOR.md). Рисуется
+// один раз при смене цвета (не в цикле rAF — сознательно статичный, не крутится), тем же почерком
+// «пыли», что у главного FOM, только маленький и без движения. Слева — цвет текущего мира/звезды,
+// меняется. Справа — «Best», её ОРИГИНАЛЬНЫЙ цвет — золото, и он **не меняется никогда**, ни от
+// смены проекта, ни от клика по кольцу (Создатель, 01.08.2026, прямым текстом дважды подряд).
+var fom2Canvas = document.getElementById('fom2Canvas');
+var fom2Ctx = fom2Canvas ? fom2Canvas.getContext('2d') : null;
+var lastFom2Palette = null;
+var fom2CanvasRight = document.getElementById('fom2CanvasRight');
+var fom2CtxRight = fom2CanvasRight ? fom2CanvasRight.getContext('2d') : null;
+function resizeFom2El(canvasEl){
+  if(!canvasEl) return false;
+  var size = Math.round((canvasEl.clientWidth || 96) * dpr);
+  if(canvasEl.width !== size){ canvasEl.width = size; canvasEl.height = size; return true; }
+  return false;
+}
+function resizeFom2(){ if(resizeFom2El(fom2Canvas)){ lastFom2Palette = null; } }
+window.addEventListener('resize', resizeFom2);
+window.addEventListener('resize', function(){
+  if(resizeFom2El(fom2CanvasRight)){ drawFom2(fom2CtxRight, fom2CanvasRight, WORLDS.best); }
+});
+function drawFom2(ctx2, canvasEl, pal){
+  if(!ctx2 || !pal) return;
+  var cw = canvasEl.width, ch = canvasEl.height;
+  ctx2.clearRect(0,0,cw,ch);
+  var cx = cw/2, cy = ch/2;
+  var outerR = cw*0.42, innerR = outerR*0.6, bandHalf = (outerR-innerR)/2, ringR = innerR+bandHalf;
+  var spread = bandHalf*3.2;
+  var N = reduced ? 55 : 130;
+  for(var i=0;i<N;i++){
+    var band = (seeded(i*7+1)+seeded(i*7+2)+seeded(i*7+4)+seeded(i*7+5))/4;
+    var r = ringR + (band-0.5)*2*spread;
+    if(r < innerR*0.15) continue;
+    var ang = seeded(i*7+3)*Math.PI*2;
+    var x = cx+Math.cos(ang)*r, y = cy+Math.sin(ang)*r*0.985;
+    var closeness = 1 - Math.min(1, Math.abs(r-ringR)/spread);
+    var depthF = (Math.sin(ang)+1)/2;
+    var size = (seeded(i*7+6) > 0.9 ? 1.4+seeded(i*7+8)*1.3 : 0.45+seeded(i*7+8)*0.7) * (cw/220);
+    size *= (0.85+0.3*depthF);
+    var idx = (seeded(i*7+9)*0.4 + (1-closeness)*0.6) * (pal.length-1);
+    var i0 = Math.floor(idx), i1 = Math.min(pal.length-1, i0+1), fp = idx-i0;
+    var a = pal[i0], b = pal[i1];
+    var r0 = Math.round(a[0]+(b[0]-a[0])*fp), g0 = Math.round(a[1]+(b[1]-a[1])*fp), b0 = Math.round(a[2]+(b[2]-a[2])*fp);
+    // Ярче базовой формулы FOM (Создатель, 01.08.2026 — «чуть ярче») — FOM2 маленький, без запаса
+    // яркости частицы тут же тонут в чёрном фоне.
+    var alpha = Math.min(1, (0.42+0.85*closeness) * (0.82+0.28*depthF) * 1.25);
+    ctx2.fillStyle = 'rgba('+r0+','+g0+','+b0+','+alpha.toFixed(3)+')';
+    ctx2.beginPath(); ctx2.arc(x,y,size,0,Math.PI*2); ctx2.fill();
+  }
+}
+if(fom2CtxRight){
+  resizeFom2El(fom2CanvasRight);
+  drawFom2(fom2CtxRight, fom2CanvasRight, WORLDS.best);
+}
 var GT_OUTER = 0.42, GT_INNER = 0.84;
 var worldIdx = 0;
 // Длительность/режим перехода задаются в момент клика (см. nextWorld/enterWord) — у тора и у входа
@@ -21,6 +75,11 @@ var transDurationMs = 1000;
 var transMode = 'dissolve';
 var curPalette = WORLDS.freex;
 var transFrom = WORLDS.freex, transTo = WORLDS.freex, transStart = -1e9, lastT = 0;
+// FOM2-слева следит за СВОИМ отдельным «целевым» цветом, не за transTo напрямую (Создатель,
+// 01.08.2026: «цвет фом2 не меняется нигде и никак, он стабильный — это аватарка проекта»). Клик
+// по кольцу (nextWorld) — просто эксперимент с цветом тора и не должен трогать FOM2; настоящая
+// смена (enterWord/enterParticipant при переходе между Best/проектами/звёздами) — трогает.
+var fom2Target = WORLDS.freex;
 // ЭКСПЕРИМЕНТ — «Spin-кик» из CapCut: короткий рывок вращения кольца в момент клика, гаснет за 700мс.
 var spinKickStart = -1e9;
 var SPIN_KICK_MS = 700, SPIN_KICK_AMOUNT = 0.9;
@@ -54,7 +113,7 @@ for(var pi=0; pi<P_N; pi++){
   particles.push({
     angle0: seeded(pi*5+11)*Math.PI*2,
     radiusU: band,
-    speed: 0.00003 + seeded(pi*5+13)*0.00002,
+    speed: 0.000008 + seeded(pi*5+13)*0.000006,
     size: seeded(pi*5+17) > 0.92 ? (1.6+seeded(pi*5+19)*1.6) : (0.5+seeded(pi*5+19)*0.9),
     twPhase: seeded(pi*5+23)*Math.PI*2,
     twSpeed: 0.00042+seeded(pi*5+29)*0.00084,
@@ -73,6 +132,15 @@ function draw(t){
   var transP = Math.min(1, (t - transStart) / transDurationMs);
   var easedP = easeInOutCubic(transP);
   curPalette = transP >= 1 ? transTo : lerpPalette(transFrom, transTo, easedP);
+  // FOM2-слева красится в цвет fom2Target (не transTo!) — снимок, не анимация: перерисовать
+  // только когда цель реально сменилась, не каждый кадр (иначе «static» превратится в мерцание).
+  // Клик по кольцу (nextWorld) fom2Target не трогает — FOM2 не дёргается от экспериментов с
+  // цветом тора. FOM2-справа сюда НЕ входит — её золото зафиксировано один раз при загрузке.
+  if(fom2Ctx && fom2Target !== lastFom2Palette){
+    resizeFom2();
+    lastFom2Palette = fom2Target;
+    drawFom2(fom2Ctx, fom2Canvas, fom2Target);
+  }
   ctx.clearRect(0,0,w,h);
   var cx=w/2, cy=h/2, minDim = Math.min(w,h);
   var outerR = minDim*GT_OUTER, innerR = outerR*GT_INNER;

@@ -29,21 +29,38 @@
   <div class="meta-row">
     <span id="participantBadge" class="participant-badge" aria-hidden="true"></span>
     <span id="participantName" class="participant-name"></span>
-    <a id="tiktokLink" class="tiktok-link" href="https://www.tiktok.com/@best.show.official" target="_blank" rel="noopener noreferrer" aria-label="BestOfficial в TikTok — @best.show.official">TikTok</a>
-    <div class="meta-right">
-      <button id="participantsBtn" class="participants-link" type="button" aria-pressed="false">Участники</button>
-      <button id="bestBtn" class="participants-link" type="button" aria-label="Вернуться на главную страницу Best">Best</button>
-    </div>
+  </div>
+  <a id="tiktokLink" class="tiktok-link" href="https://www.tiktok.com/@best.show.official" target="_blank" rel="noopener noreferrer" aria-label="BestOfficial в TikTok — @best.show.official">TikTok</a>
+  <div id="fom2Tor" class="fom2-wrap fom2-wrap-left" role="button" tabindex="0" aria-pressed="false" aria-label="Звёзды — сияние семьи BestOfficial">
+    <canvas id="fom2Canvas" class="fom2-canvas" aria-hidden="true"></canvas>
+    <span id="fom2Label" class="fom2-label" aria-hidden="true">Звёзды</span>
+  </div>
+  <div id="fom2TorRight" class="fom2-wrap fom2-wrap-right" role="button" tabindex="0" aria-label="Best — вернуться на главную страницу">
+    <canvas id="fom2CanvasRight" class="fom2-canvas" aria-hidden="true"></canvas>
+    <span class="fom2-label" aria-hidden="true">Best</span>
   </div>
   <div id="participantsPanel" class="participants-panel" role="dialog" aria-modal="true" aria-labelledby="participantsTitle" aria-hidden="true">
     <div class="participants-backdrop" data-close></div>
     <div class="participants-card">
       <button class="participants-close" type="button" aria-label="Закрыть">×</button>
       <p class="participants-eyebrow">TikTok · Telegram</p>
-      <h2 id="participantsTitle">Участники</h2>
+      <h2 id="participantsTitle">Звёзды</h2>
       <p class="participants-sub">@best.show.official · 397 подписчиков · 9&nbsp;018 лайков · 25 в Telegram · 121 видео</p>
       <div class="participants-grid" id="participantsGrid"></div>
       <p class="participants-foot">Клик по @нику открывает TikTok</p>
+    </div>
+  </div>
+  <div id="starPage" class="star-page" role="dialog" aria-modal="true" aria-labelledby="starPageName" aria-hidden="true">
+    <div class="star-backdrop" data-star-close></div>
+    <div class="star-head">
+      <img id="starPhoto" class="star-photo-mini" alt="">
+      <div class="star-head-text">
+        <h2 id="starPageName" class="star-name-mini"></h2>
+        <div id="starRole" class="star-roles"></div>
+      </div>
+    </div>
+    <div class="star-card">
+      <div id="starFacts" class="star-facts"></div>
     </div>
   </div>
 

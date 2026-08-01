@@ -1,19 +1,35 @@
 /* Участники — с релиза 1.4 (31.07.2026) видны и на публичной странице, не только в мастерской. */
-.meta-right{
-  display:flex; align-items:center; gap:10px; white-space:nowrap;
+/* FOM2 — младший static-тор, живой знак «Звёзды» вместо серой pill-кнопки «Участники»
+   (Создатель + Grok, 01.08.2026, см. .agents/совет/FOM2-STATIC-TOR.md). Левый нижний угол,
+   ~1/5–1/6 главного кольца, картинка-снимок (без rAF, без вращения) — цвет считает torus.js
+   и красит в цвет текущего мира (на Best — золото эталона). */
+.fom2-wrap{
+  position:fixed;
+  /* +34px над devinfo (левый низ, только в мастерской) — не пересекаться с меткой версии. */
+  bottom:max(46px, calc(env(safe-area-inset-bottom) + 40px));
+  z-index:4; width:min(18vmin,120px); height:min(18vmin,120px);
+  opacity:0; pointer-events:none; transition:opacity 0.6s ease, filter 0.3s ease;
+  cursor:pointer; -webkit-tap-highlight-color:transparent;
 }
-.participants-link{
-  white-space:nowrap; min-height:44px; display:inline-flex; align-items:center;
-  opacity:0; pointer-events:none; transition:opacity 0.6s ease;
-  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
-  font-size:13px; letter-spacing:0.3px; cursor:pointer;
-  color: rgba(255,220,130,0.55); background:transparent;
-  border:1px solid rgba(255,220,130,0.28); border-radius:100px; padding:5px 16px;
+.fom2-wrap-left{ left:max(12px, env(safe-area-inset-left)); }
+.fom2-wrap-right{ right:max(12px, env(safe-area-inset-right)); }
+.fom2-wrap.show{ opacity:1; pointer-events:auto; }
+.fom2-wrap.active{ filter:brightness(1.35) saturate(1.15); }
+.fom2-wrap:hover, .fom2-wrap:focus-visible{ filter:brightness(1.2); }
+.fom2-canvas{ position:absolute; inset:0; display:block; width:100%; height:100%; }
+/* Текст по центру FOM2 — вернул обратно (Создатель, 01.08.2026: «верни назад то, что было
+   написано») — короткий эксперимент без него не прижился. */
+.fom2-label{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center;
+  width:80%; line-height:1.25;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(7px, 1vmin, 9.5px); letter-spacing:0.08em; text-transform:uppercase; font-weight:500;
+  color: rgba(224,204,164,0.78);
+  /* Светится, но неподвижно — без keyframes/переливания (Создатель, 01.08.2026: «статично не
+     переливается»), в отличие от анимированного глянца главного слова BestOfficial. */
+  text-shadow: 0 0 5px rgba(255,224,160,0.65), 0 0 12px rgba(255,205,110,0.35);
 }
-.participants-link.show{ opacity:1; pointer-events:auto; }
-.participants-link:hover, .participants-link:focus-visible{ color:rgba(255,230,160,0.95); border-color:rgba(255,220,130,0.55); }
-.participants-link.active{ color:#0c0b10; background:rgba(255,213,88,0.9); border-color:rgba(255,213,88,0.9); }
-@media (prefers-reduced-motion: reduce){ .participants-link{ transition:none; } }
+@media (prefers-reduced-motion: reduce){ .fom2-wrap{ transition:none; } }
 
 .participants-panel{
   position:fixed; inset:0; z-index:10; display:flex; align-items:center; justify-content:center;
@@ -59,3 +75,59 @@
 .p-handle:hover{ color:#ffd558; border-color:rgba(255,220,130,0.4); }
 .p-clips{ font-family:ui-monospace,Consolas,monospace; font-size:10px; color:rgba(236,230,216,0.35); }
 .participants-foot{ margin-top:22px; text-align:center; font-size:10.5px; color:rgba(236,230,216,0.3); }
+
+/* Страница звезды — «разворот сцены» (эскиз A, .agents/совет/FOM2-ЗВЁЗДЫ-ИМЕНА-И-СТРАНИЦЫ.md),
+   Создатель, 01.08.2026: клик по имени в FOM2 → полноэкранная презентация звезды, тор и слово
+   темнеют за ней. Первая наполненная — Галя; у остальных те же поля, факты добавятся по мере слов
+   Создателя (не выдумываем то, чего нет). */
+.star-page{
+  position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center;
+  padding:24px; opacity:0; pointer-events:none; transition:opacity 0.4s ease;
+}
+.star-page.open{ opacity:1; pointer-events:auto; }
+@media (prefers-reduced-motion: reduce){ .star-page{ transition:none; } }
+.star-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,0.55); }
+.star-card{
+  position:relative; z-index:1; width:100%; max-width:420px; max-height:70vh; overflow-y:auto;
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px;
+  padding:10px 26px 32px;
+  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+}
+/* Маленькая аватарка + имя + роль — в самом верху экрана, в углу, а не большим фото в центре
+   (Создатель, 01.08.2026: «сделай аватарку ещё меньше, поставь в самый верх», «мини-карточку
+   руководитель Best поставь выше»). Фикс к вьюпорту (не к карточке), как FOM2/devinfo — так
+   реально «в самом верху». Стрелка «← Звёзды» убрана — назад теперь только клик по тёмному фону. */
+.star-head{
+  position:fixed; top:max(14px, env(safe-area-inset-top) + 10px);
+  left:max(14px, env(safe-area-inset-left)); z-index:1;
+  display:flex; align-items:center; gap:9px;
+}
+.star-head-text{ display:flex; flex-direction:column; align-items:flex-start; gap:3px; }
+.star-photo-mini{
+  width:34px; height:34px; border-radius:50%; object-fit:cover; flex:none;
+  box-shadow:0 0 0 1.5px rgba(255,214,140,0.45), 0 0 12px rgba(255,200,110,0.3);
+}
+.star-photo-mini.leader{ box-shadow:0 0 0 1.5px rgba(255,224,160,0.6), 0 0 16px rgba(255,205,120,0.42); }
+.star-name-mini{
+  margin:0; font-family:"Alex Brush","Segoe Script",cursive; font-weight:400;
+  font-size:clamp(1.3rem,4.5vw,1.7rem); color:#ffd558; text-shadow:0 0 14px rgba(255,213,88,0.35);
+}
+/* Несколько «мк» (мини-карточек) рядом — у кого больше одной роли, все видны сразу
+   (Создатель, 01.08.2026: «мк руководитель Dualis», «мк руководитель FingerDance»…). */
+.star-roles{ display:flex; flex-wrap:wrap; gap:4px; max-width:min(70vw,320px); }
+.star-role-pill{
+  margin:0; font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; font-weight:600;
+  color:#ffd558; background:rgba(255,213,88,0.08); border:1px solid rgba(255,213,88,0.24);
+  border-radius:100px; padding:3px 11px; white-space:nowrap;
+}
+.star-roles:empty{ display:none; }
+.star-facts{ margin-top:6px; display:flex; flex-direction:column; gap:6px; }
+.star-fact{ margin:0; font-size:13px; color:rgba(236,230,216,0.72); }
+
+/* Тор и слово темнеют, пока открыта страница звезды — она в фокусе, сцена уходит на фон. */
+body.star-open .stage, body.star-open .meta-row, body.star-open .tiktok-link, body.star-open .fom2-wrap{
+  filter:brightness(0.3); transition:filter 0.4s ease;
+}
+@media (prefers-reduced-motion: reduce){
+  body.star-open .stage, body.star-open .meta-row, body.star-open .tiktok-link, body.star-open .fom2-wrap{ transition:none; }
+}

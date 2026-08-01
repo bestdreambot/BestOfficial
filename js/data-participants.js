@@ -25,21 +25,24 @@ var PARTICIPANTS = [
 // цепочки проектов). ringMode/wordFx — те же 5, что у проектов, по кругу.
 var PARTICIPANT_RING_ORDER = ['portal','dissolve','wipe','burst','spiral'];
 var PARTICIPANT_FX_ORDER = ['gold_enter','soft_only','flash_warm','no_fx','streak_only'];
+// leads — реальные проекты, где человек руководитель (см. .agents/совет/РОЛИ-И-ПРОЕКТЫ.md, крупинки
+// подтверждённые Создателем 01.08.2026). Только факты, ничего не выдумываем — у кого нет
+// подтверждённого руководства, поля просто нет.
 var PARTICIPANT_CHAIN = [
-  { word:'Галя',     aria:'Галя. Руководитель проекта Best.', world:'p_galya',    handle:'not_yours21.02',        photo:'galia', leader:true, badge:'Руководитель' },
-  { word:'Мария',    aria:'Мария. Участник BEST.',    world:'p_maria',    handle:'angelidemon22.07.88m',  photo:'masha' },
-  { word:'Вива',     aria:'Вива. Участник BEST.',     world:'p_viva',     handle:'vikaviva5',             photo:'viva' },
-  { word:'Алина',    aria:'Алина. Участник BEST.',    world:'p_alina',    handle:'im_your_asya',         photo:'alina' },
+  { word:'Галя',     aria:'Галя. Руководитель проекта Best.', world:'p_galya',    handle:'not_yours21.02',        photo:'galia', leader:true, badge:'Руководитель Best', leads:['Jelly'] },
+  { word:'Мария',    aria:'Мария. Участник BEST.',    world:'p_maria',    handle:'angelidemon22.07.88m',  photo:'masha', leads:['Dualis','Lunora','Finger Dance'] },
+  { word:'Вива',     aria:'Вива. Участник BEST.',     world:'p_viva',     handle:'vikaviva5',             photo:'viva', leads:['Animix','Dualis'] },
+  { word:'Алина',    aria:'Алина. Участник BEST.',    world:'p_alina',    handle:'im_your_asya',         photo:'alina', leads:['Aleorix','Anibrox'] },
   { word:'Дима',     aria:'Дима. Участник BEST.',     world:'p_dima',     handle:'momentonoriarti',       photo:'dima' },
-  { word:'Маша',     aria:'Маша. Участник BEST.',     world:'p_masha',    handle:'mayshonok1994',        photo:'maria' },
-  { word:'Виктория', aria:'Виктория. Участник BEST.', world:'p_viktoria', handle:'tori_fomi2383',        photo:'torri' },
+  { word:'Маша',     aria:'Маша. Участник BEST.',     world:'p_masha',    handle:'mayshonok1994',        photo:'maria', leads:['Fovela'] },
+  { word:'Виктория', aria:'Виктория. Участник BEST.', world:'p_viktoria', handle:'tori_fomi2383',        photo:'torri', leads:['hit.parad official'] },
   { word:'Валя',     aria:'Валя. Участник BEST.',     world:'p_valya',    handle:'izbalovannoe..chudo',   photo:'valya' },
-  { word:'Ира',      aria:'Ира. Участник BEST.',      world:'p_ira',      handle:'26koroleva_ada',       photo:'ira' },
+  { word:'Ира',      aria:'Ира. Участник BEST.',      world:'p_ira',      handle:'26koroleva_ada',       photo:'ira', leads:['Moon'] },
   { word:'Виталий',  aria:'Виталий. Участник BEST.',  world:'p_vitali',   handle:'mostwanted_86',        photo:'vitali' },
   { word:'Оксана',   aria:'Оксана. Участник BEST.',   world:'p_oksana',   handle:'oks7440',               photo:'oksana' },
   { word:'Саша',     aria:'Саша. Участник BEST.',     world:'p_sasha',    handle:'19._black_fenix_.91',  photo:'sasha' },
   { word:'Марина',   aria:'Марина. Участник BEST.',   world:'p_marina',   handle:'vredina_safronova2',   photo:'marina' },
-  { word:'Алексей',  aria:'Алексей. Участник BEST.',  world:'p_aleksey',  handle:'comtealex_23new',       photo:'aleksey' },
+  { word:'Алексей',  aria:'Алексей. Участник BEST.',  world:'p_aleksey',  handle:'comtealex_23new',       photo:'aleksey', leads:['Nerix'] },
   { word:'Нина',     aria:'Нина. Участник BEST.',     world:'p_nina',     handle:'nina1990.12.26',        photo:'nina' }
 ];
 PARTICIPANT_CHAIN.forEach(function(p, i){

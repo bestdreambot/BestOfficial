@@ -44,15 +44,21 @@ body{ display:flex; align-items:center; justify-content:center; }
   padding-left: max(10px, env(safe-area-inset-left));
   padding-right: max(10px, env(safe-area-inset-right));
 }
+/* Матовый подпись-лейбл — самостоятельный, по центру экрана, внутри тора под словом (Создатель,
+   01.08.2026 — «нужно выше, что бы он был внутри тора а не на нем»). Смещение на vmin, а не vh —
+   та же единица, что у самого кольца (GT_OUTER=0.42 в torus.js), иначе на широких/квадратных
+   экранах подпись попадала прямо на линию кольца вместо пространства внутри него. */
 .tiktok-link{
-  display:inline-flex; align-items:center; min-height:44px; padding:5px 4px;
-  opacity:0; pointer-events:none; transition:opacity 0.6s ease;
-  font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
-  font-size:14px; letter-spacing:0.3px;
-  color: rgba(255,220,130,0.75); text-decoration:none;
+  position:fixed; left:50%; top:calc(50% + 20vmin); transform:translateX(-50%);
+  z-index:4; display:inline-flex; align-items:center; justify-content:center;
+  min-height:30px; padding:2px 10px;
+  opacity:0; pointer-events:none; transition:opacity 0.6s ease, color 0.25s ease;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(12px, 1.6vmin, 15px); letter-spacing:0.16em; text-transform:uppercase; font-weight:500;
+  color: rgba(224,204,164,0.78); text-decoration:none; white-space:nowrap;
 }
 .tiktok-link.show{ opacity:1; pointer-events:auto; }
-.tiktok-link:hover, .tiktok-link:focus-visible{ color:rgba(255,230,160,0.95); text-decoration:underline; }
+.tiktok-link:hover, .tiktok-link:focus-visible{ color:rgba(244,226,186,0.98); }
 @media (prefers-reduced-motion: reduce){ .tiktok-link{ transition:none; } }
 .participant-name{
   opacity:0; margin-right:0; transition:opacity 0.6s ease, margin-right 0.6s ease;
