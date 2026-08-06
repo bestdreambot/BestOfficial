@@ -28,11 +28,13 @@ var PARTICIPANT_FX_ORDER = ['gold_enter','soft_only','flash_warm','no_fx','strea
 // leads — реальные проекты, где человек руководитель (см. .agents/совет/РОЛИ-И-ПРОЕКТЫ.md, крупинки
 // подтверждённые Создателем 01.08.2026). Только факты, ничего не выдумываем — у кого нет
 // подтверждённого руководства, поля просто нет.
+// 06.08.2026, Создатель: «поставь Алину после Гали» — порядок цепочки на порту 2000 намеренно
+// отличается от live-прода (там Алина 4-я), только здесь, локально, git/Vercel не тронуты.
 var PARTICIPANT_CHAIN = [
   { word:'Галя',     aria:'Галя. Руководитель проекта Best.', world:'p_galya',    handle:'not_yours21.02',        photo:'galia', leader:true, badge:'Руководитель Best', leads:['Jelly'] },
+  { word:'Алина',    aria:'Алина. Участник BEST.',    world:'p_alina',    handle:'im_your_asya',         photo:'alina', leads:['Aleorix','Anibrox'] },
   { word:'Мария',    aria:'Мария. Участник BEST.',    world:'p_maria',    handle:'angelidemon22.07.88m',  photo:'masha', leads:['Dualis','Lunora','Finger Dance'] },
   { word:'Вива',     aria:'Вива. Участник BEST.',     world:'p_viva',     handle:'vikaviva5',             photo:'viva', leads:['Animix','Dualis'] },
-  { word:'Алина',    aria:'Алина. Участник BEST.',    world:'p_alina',    handle:'im_your_asya',         photo:'alina', leads:['Aleorix','Anibrox'] },
   { word:'Дима',     aria:'Дима. Участник BEST.',     world:'p_dima',     handle:'momentonoriarti',       photo:'dima' },
   { word:'Маша',     aria:'Маша. Участник BEST.',     world:'p_masha',    handle:'mayshonok1994',        photo:'maria', leads:['Fovela'] },
   { word:'Виктория', aria:'Виктория. Участник BEST.', world:'p_viktoria', handle:'tori_fomi2383',        photo:'torri', leads:['hit.parad official'] },

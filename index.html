@@ -6,69 +6,250 @@
 <title>BestOfficial</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#020307">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<!-- 05.08.2026 — ПОРТ 1000→2000, Фаза 2 (проекты + участники поверх принятого твина). Фаза 1
+     (клон сцены 1000: stage/canvas/word/живой facet-тор, ничего больше) — подтверждена Создателем
+     («ок, похоже»). Теперь по его прямому слову — «там очень много всего, и проекты и участники,
+     заполняй всё что там есть с новым дизайном» — возвращены реальные фичи bestofficial.vercel.app
+     (26 проектов PROJECTS, 15 участников PARTICIPANT_CHAIN, карточка/star-page, TikTok-ссылка),
+     но вторым слоем (Grok, §3.1: первый кадр остаётся тихим, nav-кнопки проявляются с задержкой),
+     и в новом материале — тор/слово те же, что в Фазе 1, не старый flash/streak/CSS-пульт. Данные
+     (js/data-*.js) — родные, без изменений. Движок — js/best-app.js, не embedded-скрипт канона:
+     цвет тора обобщён на ЛЮБУЮ из ~40 палитр WORLDS (не только gold), один переход-почерк
+     (dissolve + facet-ignite) вместо старых пяти ring-режимов — сознательное упрощение ради
+     консистентности материала, не потеря функциональности. См. память
+     project_bestofficial_local_visual_port.md. Локально, порт 2000 — git/Vercel не тронуты. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/brand-word.css">
-<link rel="stylesheet" href="css/stage.css">
-<link rel="stylesheet" href="css/participants.css">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<!-- 06.08.2026 — перед деплоем найдено расхождение с живым сайтом: прод умеет открываться как
+     Telegram Mini App (Release 1.7/1.8 в origin: telegram-web-app.js, tg.expand(), тактильный
+     отклик, openLink для TikTok, safe-area), а порт 2000 этого не умел вообще. Портируется сюда
+     ДО деплоя, чтобы деплой не убрал рабочую функцию с живого сайта (см. best-app.js). -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; margin:0; overflow:hidden; background:#020307; }
+  body{ display:flex; align-items:center; justify-content:center; }
+  .stage{
+    position:relative; width:min(88vmin, 920px); aspect-ratio:1/1;
+    display:flex; align-items:center; justify-content:center;
+    container-type: inline-size;
+  }
+  .stage::before{
+    content:""; position:absolute; inset:12%; border-radius:50%;
+    background:radial-gradient(circle, transparent 30%, rgba(255,224,150,.10) 52%, rgba(255,200,120,.055) 63%, transparent 74%);
+    filter:blur(18px); animation:breathe 9.5s ease-in-out infinite;
+  }
+  #tor{ position:absolute; inset:0; width:100%; height:100%; filter:drop-shadow(0 0 12px rgba(255,214,140,.28)); }
+  @keyframes breathe{ 50%{ transform:scale(1.035); opacity:.78; } }
+  @media (prefers-reduced-motion: reduce){ .stage::before{ animation:none; } }
+
+  .word{
+    position:relative; z-index:2; text-align:center;
+    user-select:none; cursor:pointer;
+    opacity:0; animation: wordIn 1.6s cubic-bezier(.16,.9,.25,1) .3s forwards;
+  }
+  .word:focus-visible{ outline:2px solid rgba(255,222,140,.85); outline-offset:10px; border-radius:8px; }
+  .word .fo{
+    display:block;
+    font-family:"Orbitron", "Cinzel", Georgia, "Times New Roman", serif;
+    font-weight:900; line-height:1.05; letter-spacing:0.015em;
+    font-size: clamp(1.4rem, 9.2vmin, 6.3rem);
+    font-size: clamp(1.4rem, 10cqi, 8rem);
+    white-space:nowrap;
+    -webkit-text-stroke: 1px rgba(10,12,15,.6);
+    background:
+      radial-gradient(ellipse 24% 12% at 26% 23%, rgba(255,250,225,.32) 0%, rgba(255,250,225,0) 72%),
+      linear-gradient(115deg, transparent 44%, rgba(255,244,210,.6) 49.6%, rgba(255,244,210,.6) 50.4%, transparent 56%),
+      linear-gradient(100deg, transparent 32%, rgba(255,209,102,.16) 43%, rgba(255,253,243,.22) 50%, rgba(255,243,196,.16) 57%, transparent 68%),
+      repeating-linear-gradient(125deg, rgba(255,255,255,.22) 0 5%, rgba(20,20,26,.20) 5% 10%, rgba(255,255,255,.10) 10% 14%),
+      repeating-linear-gradient(35deg, rgba(255,255,255,.16) 0 8%, rgba(0,0,0,.16) 8% 16%),
+      linear-gradient(160deg,
+        #4a3208 0%, #96701a 14%, #3d2a08 26%, #b8912c 36%,
+        #cfa646 45%, #fff6d6 48%, #cfa646 51%,
+        #b8912c 60%, #3d2a08 72%, #96701a 86%, #4a3208 100%);
+    background-size: 100% 100%, 260% 100%, 340% 100%, 100% 100%, 100% 100%, 200% 100%;
+    background-position: 0 0, 220% 0, 80% 0, 0 0, 0 0, 0% 50%;
+    background-blend-mode: normal, normal, normal, soft-light, soft-light, normal;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter:
+      contrast(1.18) saturate(.24)
+      drop-shadow(-1px -1px 0.5px rgba(255,255,255,.5))
+      drop-shadow(2px 3px 0 rgba(0,0,0,.5))
+      drop-shadow(3px 6px 5px rgba(0,0,0,.4))
+      drop-shadow(0 0 10px rgba(200,220,255,.12));
+    animation: shimmer 17s ease-in-out infinite;
+  }
+  .fo-over{ position:absolute; top:0; left:0; width:100%; opacity:0; pointer-events:none; }
+  @keyframes shimmer{
+    0%{ background-position: 0 0, 220% 0, 80% 0, 0 0, 0 0, 0% 50%; }
+    35%{ background-position: 0 0, 220% 0, 80% 0, 0 0, 0 0, 55% 50%; }
+    50%{ background-position: 0 0, 70% 0, 25% 0, 0 0, 0 0, 100% 50%; }
+    65%{ background-position: 0 0, -80% 0, -30% 0, 0 0, 0 0, 55% 50%; }
+    100%{ background-position: 0 0, -80% 0, -30% 0, 0 0, 0 0, 0% 50%; }
+  }
+  @keyframes wordIn{ from{ opacity:0; transform:translateY(10px) scale(.97); } to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce){
+    .word{ opacity:1; animation:none; }
+    .word .fo{ animation:none; }
+  }
+
+  /* Фаза 2 (05.08.2026) — проекты/участники поверх твина, тот же материал (тёмный космос + золото),
+     не старый CSS-пульт. Ссылка/кнопки/карточка проявляются с задержкой (см. best-app.js) — первый
+     кадр остаётся тихим. */
+  .tiktok-link{
+    position:fixed; left:50%; top:calc(50% + 20vmin); transform:translateX(-50%);
+    z-index:4; display:inline-flex; align-items:center; justify-content:center;
+    min-height:30px; padding:2px 10px;
+    opacity:0; pointer-events:none; transition:opacity 0.6s ease, color 0.25s ease;
+    font-family:"Cinzel", Georgia, "Times New Roman", serif;
+    font-size: clamp(12px, 1.6vmin, 15px); letter-spacing:0.16em; text-transform:uppercase; font-weight:600;
+    color: rgba(224,204,164,0.78); text-decoration:none; white-space:nowrap;
+  }
+  .tiktok-link.show{ opacity:1; pointer-events:auto; }
+  .tiktok-link:hover, .tiktok-link:focus-visible{ color:rgba(244,226,186,0.98); }
+  @media (prefers-reduced-motion: reduce){ .tiktok-link{ transition:none; opacity:1; pointer-events:auto; } }
+
+  /* 05.08.2026, повторный аудит Grok (ai/GROK.md § «повторный аудит 2000 · mktor вернуть»):
+     предыдущий заход («самоцвет»-кружок вместо canvas-мини-тора) исполнил прошлый совет Grok
+     СЛИШКОМ буквально — тот был планом B на случай "не получится красиво", а не запретом на мини-
+     тор как сущность. Создатель прямо сказал: кружки — не то, верните настоящие младшие торы
+     (mktor = FOM2 из BestOfficial.git, тем же материалом, что порт 1000). Вернул: canvas-кольцо
+     (не диск), тот же гранёный+пылевой почерк, что у главного тора (упрощённый — меньше сегментов/
+     частиц), подпись — absolute по центру ВНУТРИ кольца (не под ним), LEFT перекрашивается в цвет
+     текущего мира/звезды, RIGHT — всегда золото Best. Рисуется в одном rAF с главным тором
+     (drawMktor() в best-app.js — отдельная функция, главный draw-loop не трогал). */
+  .nav-btn{
+    position:fixed; bottom:max(18px, env(safe-area-inset-bottom)); z-index:4;
+    width:min(18vmin, 120px); aspect-ratio:1/1; cursor:pointer; user-select:none;
+    opacity:0; transform:translateY(8px); pointer-events:none;
+    transition:opacity .7s ease, transform .7s ease;
+  }
+  .nav-btn.show{ opacity:1; transform:none; pointer-events:auto; }
+  .nav-btn-left{ left:max(14px, env(safe-area-inset-left)); }
+  .nav-btn-right{ right:max(14px, env(safe-area-inset-right)); }
+  .nav-canvas{
+    position:absolute; inset:0; width:100%; height:100%; border-radius:50%;
+    filter:drop-shadow(0 0 10px rgba(255,214,140,.22));
+    transition:filter .25s ease;
+  }
+  .nav-btn:hover .nav-canvas, .nav-btn:focus-visible .nav-canvas, .nav-btn.active .nav-canvas{
+    filter:drop-shadow(0 0 16px rgba(255,214,140,.4));
+  }
+  /* 06.08.2026 — «шрифт в mktor такой же, как в Кторе, только меньше»: раньше подпись была плоским
+     Orbitron 700 + text-shadow, теперь тот же металл-градиент/вес/семейство, что у главного слова
+     `.fo` выше (упрощённый — без гранёной repeating-текстуры и shimmer-анимации: mktor статичный,
+     а на таком мелком размере facet-шум просто мылится), тот же принцип «слово всегда золото,
+     кольцо меняет цвет» (см. CLAUDE.md freex/bestofficial: «Word... gold gradient... fixed; only
+     torus changes color»), применённый и к mktor. 06.08.2026 — размер чуть увеличен по просьбе
+     Создателя (было clamp(8px,1.5vmin,11px), стало clamp(10px,1.9vmin,14px)). */
+  .nav-label{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    text-align:center; padding:0 10%; pointer-events:none; line-height:1.05;
+    font-family:"Orbitron", "Cinzel", Georgia, "Times New Roman", serif;
+    font-weight:900; letter-spacing:.02em; text-transform:uppercase;
+    font-size:clamp(10px, 1.9vmin, 14px); white-space:nowrap;
+    -webkit-text-stroke: 0.5px rgba(10,12,15,.55);
+    background:
+      linear-gradient(115deg, transparent 40%, rgba(255,244,210,.65) 49%, rgba(255,244,210,.65) 51%, transparent 60%),
+      linear-gradient(160deg,
+        #4a3208 0%, #96701a 16%, #3d2a08 30%, #b8912c 42%,
+        #cfa646 49%, #fff6d6 52%, #cfa646 55%,
+        #b8912c 64%, #3d2a08 78%, #96701a 90%, #4a3208 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: contrast(1.15) saturate(.32) drop-shadow(0 1px 2px rgba(0,0,0,.85)) drop-shadow(0 0 5px rgba(0,0,0,.55));
+  }
+  .nav-btn:focus-visible{ outline:2px solid rgba(255,222,140,.85); outline-offset:4px; border-radius:50%; }
+  @media (prefers-reduced-motion: reduce){ .nav-btn, .nav-canvas{ transition:none; } }
+
+  /* Лицо в дыре главного Ктора (05.08.2026, Grok: «часть, которая уже получалась» в старом FO —
+     фото участника по центру, как и раньше, теперь только в режиме звёзд). */
+  .hole-photo{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:min(42vmin, 46%); aspect-ratio:1/1; border-radius:50%; object-fit:cover;
+    z-index:2; opacity:0; pointer-events:none; transition:opacity .6s ease;
+    box-shadow: 0 0 0 1px rgba(255,214,140,.35), 0 0 22px rgba(255,200,110,.28);
+    -webkit-mask-image: radial-gradient(circle, #000 62%, transparent 100%);
+    mask-image: radial-gradient(circle, #000 62%, transparent 100%);
+  }
+  .hole-photo.show{ opacity:1; pointer-events:auto; }
+  .hole-photo.leader{ box-shadow: 0 0 0 1.5px rgba(255,224,160,.5), 0 0 30px rgba(255,205,120,.35); }
+  @media (prefers-reduced-motion: reduce){ .hole-photo{ transition:none; } }
+  /* 06.08.2026 (Создатель: «в кторе я вижу Галя, а в маленьком торе тоже написано Галя» — дубль
+     имени). На эталоне (bestofficial.vercel.app) это уже было решено Создателем 01.08.2026 — «имя
+     под фото убери, оно уже есть в FOM2» (js/app.js: participantNameEl.classList.remove('show')).
+     Мы это решение потеряли при клоне и снова рисовали имя под фото. Возврат к эталону: слово
+     прячется совсем, пока показано фото — имя видно только один раз, в mktor слева. */
+  .stage.photo-mode .word{ opacity:0; visibility:hidden; pointer-events:none; }
+  .card-photo{
+    width:min(30vw, 120px); aspect-ratio:1/1; border-radius:50%; object-fit:cover;
+    margin:0 auto 12px; display:block;
+    box-shadow: 0 0 0 1px rgba(255,214,140,.35), 0 0 18px rgba(255,200,110,.25);
+  }
+
+  .card{ position:fixed; inset:0; z-index:6; display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .3s ease; }
+  .card.open{ opacity:1; pointer-events:auto; }
+  .card-backdrop{ position:absolute; inset:0; background:rgba(2,3,7,.82); backdrop-filter:blur(3px); }
+  .card-body{
+    position:relative; z-index:1; max-width:min(88vw, 420px); width:100%;
+    background:linear-gradient(165deg, rgba(20,16,8,.92), rgba(10,8,4,.96));
+    border:1px solid rgba(255,214,140,.22); border-radius:18px; padding:28px 24px;
+    box-shadow:0 20px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(255,214,140,.06) inset;
+    text-align:center;
+  }
+  .card-close{
+    position:absolute; top:10px; right:12px; width:30px; height:30px; border-radius:50%;
+    border:1px solid rgba(255,214,140,.25); background:rgba(255,255,255,.04); color:rgba(255,224,170,.85);
+    font-size:18px; line-height:1; cursor:pointer;
+  }
+  .card-name{ margin:6px 0 12px; font-family:"Orbitron", sans-serif; font-weight:900; font-size:clamp(1.3rem,4vw,1.9rem);
+    color:#fff6d6; letter-spacing:.02em; }
+  .card-roles{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:10px; }
+  .card-pill{
+    font-family:"Cinzel", serif; font-size:11px; letter-spacing:.05em; text-transform:uppercase;
+    color:#ffd558; background:rgba(255,213,88,.08); border:1px solid rgba(255,213,88,.22);
+    border-radius:100px; padding:4px 12px;
+  }
+  .card-fact{ margin:6px 0; font-family:Georgia, serif; font-size:13px; color:rgba(230,220,200,.85); }
+</style>
 </head>
 <body>
-  <div class="stage">
-    <canvas id="torCanvas" aria-hidden="true"></canvas>
-    <h1 data-text="BestOfficial" role="button" tabindex="0" aria-label="BestOfficial. Нажмите, чтобы изменить цвет свечения">BestOfficial</h1>
-    <img id="participantPhoto" class="participant-photo" alt="" aria-hidden="true">
-    <div id="wordFlash" class="word-flash" aria-hidden="true"></div>
-    <div id="lightStreak" class="light-streak" aria-hidden="true"></div>
-  </div>
-  <div class="meta-row">
-    <span id="participantBadge" class="participant-badge" aria-hidden="true"></span>
-    <span id="participantName" class="participant-name"></span>
-  </div>
-  <a id="tiktokLink" class="tiktok-link" href="https://www.tiktok.com/@best.show.official" target="_blank" rel="noopener noreferrer" aria-label="BestOfficial в TikTok — @best.show.official">TikTok</a>
-  <div id="fom2Tor" class="fom2-wrap fom2-wrap-left" role="button" tabindex="0" aria-pressed="false" aria-label="Звёзды — сияние семьи BestOfficial">
-    <canvas id="fom2Canvas" class="fom2-canvas" aria-hidden="true"></canvas>
-    <span id="fom2Label" class="fom2-label" aria-hidden="true">Звёзды</span>
-  </div>
-  <div id="fom2TorRight" class="fom2-wrap fom2-wrap-right" role="button" tabindex="0" aria-label="Best — вернуться на главную страницу">
-    <canvas id="fom2CanvasRight" class="fom2-canvas" aria-hidden="true"></canvas>
-    <span class="fom2-label" aria-hidden="true">Best</span>
-  </div>
-  <div id="participantsPanel" class="participants-panel" role="dialog" aria-modal="true" aria-labelledby="participantsTitle" aria-hidden="true">
-    <div class="participants-backdrop" data-close></div>
-    <div class="participants-card">
-      <button class="participants-close" type="button" aria-label="Закрыть">×</button>
-      <p class="participants-eyebrow">TikTok · Telegram</p>
-      <h2 id="participantsTitle">Звёзды</h2>
-      <p class="participants-sub">@best.show.official · 397 подписчиков · 9&nbsp;018 лайков · 25 в Telegram · 121 видео</p>
-      <div class="participants-grid" id="participantsGrid"></div>
-      <p class="participants-foot">Клик по @нику открывает TikTok</p>
+  <div class="stage" id="stage">
+    <canvas id="tor" aria-hidden="true"></canvas>
+    <img id="holePhoto" class="hole-photo" alt="" aria-hidden="true">
+    <div class="word" role="button" tabindex="0" aria-label="BestOfficial — нажмите для Best">
+      <span class="fo gold" id="foBase">BestOfficial</span>
+      <span class="fo gold fo-over" id="foOver" aria-hidden="true"></span>
     </div>
   </div>
-  <div id="starPage" class="star-page" role="dialog" aria-modal="true" aria-labelledby="starPageName" aria-hidden="true">
-    <div class="star-backdrop" data-star-close></div>
-    <div class="star-head">
-      <img id="starPhoto" class="star-photo-mini" alt="">
-      <div class="star-head-text">
-        <h2 id="starPageName" class="star-name-mini"></h2>
-        <div id="starRole" class="star-roles"></div>
-      </div>
-    </div>
-    <div class="star-card">
-      <div id="starFacts" class="star-facts"></div>
+  <a id="tiktokLink" class="tiktok-link" href="https://www.tiktok.com/@best.show.official" target="_blank" rel="noopener noreferrer" aria-label="BestOfficial в TikTok">TikTok</a>
+  <div id="navLeft" class="nav-btn nav-btn-left" role="button" tabindex="0" aria-label="Звёзды — участники Best">
+    <canvas class="nav-canvas" aria-hidden="true"></canvas>
+    <span class="nav-label" aria-hidden="true">Звёзды</span>
+  </div>
+  <div id="navRight" class="nav-btn nav-btn-right" role="button" tabindex="0" aria-label="Best — на главную">
+    <canvas class="nav-canvas" aria-hidden="true"></canvas>
+    <span class="nav-label" aria-hidden="true">Best</span>
+  </div>
+  <div id="card" class="card" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="card-backdrop"></div>
+    <div class="card-body">
+      <button class="card-close" type="button" aria-label="Закрыть">×</button>
+      <img id="cardPhoto" class="card-photo" alt="" style="display:none">
+      <h2 id="cardName" class="card-name"></h2>
+      <div id="cardRoles" class="card-roles"></div>
+      <div id="cardFacts" class="card-facts"></div>
     </div>
   </div>
 
   <script src="js/data-worlds.js"></script>
   <script src="js/data-projects.js"></script>
   <script src="js/data-participants.js"></script>
-  <script src="js/word-fx.js"></script>
-  <script src="js/torus.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/best-app.js"></script>
 </body>
 </html>
