@@ -1,6 +1,10 @@
 // Участники BEST — 15 живых людей, которых читает @best.show.official (30.07.2026); Виталий
 // (Mostwanted_86) подтверждён Создателем 30.07.2026 как участник, не архивная запись.
 // Кнопка появляется только на шаге Best — у остальных проектов цепочки своей команды нет.
+// 07.08.2026: Андрей сообщил, что клик по TikTok у Алины открывает чужой аккаунт. Первая попытка
+// починить (архивная находка 'alinohcka_vtb' из старой заметки) была без вопроса и откачена назад —
+// адрес проекта/звезды это стабильный якорь, менять без прямого слова Андрея нельзя. Правильный
+// адрес пришёл прямым словом: 'alinochka_vtb' (@alinochka_vtb) — поставлен ниже в обеих записях.
 var PARTICIPANTS = [
   { name:'Нина', nick:'Нина Воронеж', handle:'nina1990.12.26', role:'Участник', clips:'Клип: 102', photo:'nina' },
   { name:'Оксана', nick:'Ксения', handle:'oks7440', role:'Участник', photo:'oksana' },
@@ -12,7 +16,7 @@ var PARTICIPANTS = [
   { name:'Ира', nick:'Ирина Ершова', handle:'26koroleva_ada', role:'Участник', photo:'ira' },
   { name:'Маша', nick:'Mashulya', handle:'mayshonok1994', role:'Участник', photo:'maria' },
   { name:'Виктория', nick:'Tori_fomi2383', handle:'tori_fomi2383', role:'Участник', clips:'Клип: 94', photo:'torri' },
-  { name:'Алина 🎃', nick:'Alinka', handle:'im_your_asya', role:'Руководитель Aleorix', clips:'Клипы: 83, 90, 91, 97, 100, 101', photo:'alina' },
+  { name:'Алина 🎃', nick:'Alinka', handle:'alinochka_vtb', role:'Руководитель Aleorix', clips:'Клипы: 83, 90, 91, 97, 100, 101', photo:'alina' },
   { name:'Вива 🥰', nick:'Vika Anime', handle:'vikaviva5', role:'Участник', photo:'viva' },
   { name:'Мария', nick:'Demon', handle:'angelidemon22.07.88m', role:'Участник', clips:'Клипы: 87, 89, 96, 98', photo:'masha' },
   { name:'Галя ⭐', nick:'Galhunya', handle:'not_yours21.02', role:'Руководитель проекта Best', clips:'Клипы: 84, 92, 99', photo:'galia' },
@@ -46,7 +50,7 @@ var PARTICIPANT_CHAIN = [
   { word:'Галя',     aria:'Галя. Руководитель проекта Best.', world:'p_galya',    handle:'not_yours21.02',        photo:'galia', leader:true, badge:'Руководитель Best', leads:['News','Jelly'], photoConfirmed:true },
   // 06.08.2026 — реальный факт из переписки «Руководство проекта Best» (05-06.08.2026): Галя
   // спросила себе заместителя, Маша отказалась, Алина согласилась «ради Гали». Андрей подтвердил.
-  { word:'Алина',    aria:'Алина. Заместитель руководителя Best.', world:'p_alina',    handle:'im_your_asya', photo:'alina', badge:'Заместитель руководителя Best', leads:['Aleorix','Anibrox'], photoConfirmed:true },
+  { word:'Алина',    aria:'Алина. Заместитель руководителя Best.', world:'p_alina',    handle:'alinochka_vtb', photo:'alina', badge:'Заместитель руководителя Best', leads:['Aleorix','Anibrox'], photoConfirmed:true },
   { word:'Мария',    aria:'Мария. Участник BEST.',    world:'p_maria',    handle:'angelidemon22.07.88m',  photo:'masha', leads:['Dualis','Lunora','Finger Dance'] },
   { word:'Вива',     aria:'Вива. Участник BEST.',     world:'p_viva',     handle:'vikaviva5',             photo:'viva', leads:['Animix','Dualis'] },
   { word:'Дима',     aria:'Дима. Участник BEST.',     world:'p_dima',     handle:'momentonoriarti',       photo:'dima' },

@@ -245,6 +245,15 @@
     border-radius:50%; object-fit:cover;
     box-shadow: 0 0 0 1px rgba(255,214,140,.35), 0 0 18px rgba(255,200,110,.25);
   }
+  /* 08.08.2026, Создатель: «в medium-тор проектов вставь название» — у проектов вместо фото в
+     центре лежит само слово, тот же почерк (шрифт/градиент), что у надписи под главным тором. */
+  .card-mini-torus-label{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    font-family:"Orbitron","Cinzel",Georgia,"Times New Roman",serif; font-weight:900;
+    font-size:clamp(11px, 3.4vmin, 16px); letter-spacing:.02em; text-align:center;
+    max-width:78%; line-height:1.1; pointer-events:none;
+    color:#ffe9b8; text-shadow:0 0 6px rgba(255,214,140,.55), 0 1px 2px rgba(0,0,0,.6);
+  }
 
   .card{ position:fixed; inset:0; z-index:6; display:flex; align-items:center; justify-content:center;
     opacity:0; pointer-events:none; transition:opacity .3s ease; }
@@ -252,8 +261,9 @@
   .card-backdrop{ position:absolute; inset:0; background:rgba(2,3,7,.82); backdrop-filter:blur(3px); }
   /* 08.08.2026, Создатель (срочно): «в Telegram не видно всю карточку — видно только конец
      презентации, процесс вообще не виден». Причина: .card-body росла по контенту без ограничения
-     высоты и без скролла — в Telegram WebView видимая область короче, и всё, что не влезло, было
-     просто недостижимо. Теперь карточка ограничена высотой экрана и скроллится внутри себя. */
+     высоты и без скролла — на обычном мобильном браузере ужимается видом (viewport выше), а в
+     Telegram WebView видимая область короче, и всё, что не влезло, было просто недостижимо. Теперь
+     сама карточка ограничена высотой экрана и скроллится внутри себя — контент никогда не обрезан. */
   .card-body{
     position:relative; z-index:1; max-width:min(88vw, 420px); width:100%;
     max-height:calc(100vh - 40px); max-height:calc(100dvh - 40px);
@@ -290,6 +300,23 @@
   .presentation-item{
     margin:8px 0; font-family:Georgia, serif; font-size:13px; line-height:1.5; color:rgba(230,220,200,.92);
   }
+  /* 07.08.2026, Андрей: «нажимаю версию — сразу вижу, о чём был прошлый разговор» — короткий якорь
+     над списком сделанного, визуально отделён (курсив + нижняя рамка), не смешивается со списком. */
+  .version-session-summary{
+    margin:0 0 12px; padding-bottom:10px; border-bottom:1px dashed rgba(255,214,140,.22);
+    font-family:Georgia, serif; font-style:italic; font-size:12px; line-height:1.5;
+    color:rgba(255,214,140,.75);
+  }
+  .version-session-summary:empty{ display:none; }
+  /* 07.08.2026: прямой вердикт готовности к релизу — не спрятан внутри списка пунктов, сразу видно. */
+  .release-readiness{
+    margin:0 0 14px; padding:10px 14px; border-radius:10px; font-family:"Cinzel", serif;
+    font-size:13px; font-weight:600; line-height:1.5; text-align:center;
+  }
+  .release-readiness:empty{ display:none; }
+  .release-readiness.ready{ background:rgba(62,207,106,.12); border:1px solid rgba(62,207,106,.35); color:#7be3a0; }
+  .release-readiness.almost{ background:rgba(255,204,51,.1); border:1px solid rgba(255,204,51,.32); color:#ffd558; }
+  .release-readiness.not-ready{ background:rgba(255,90,90,.1); border:1px solid rgba(255,90,90,.32); color:#ff9a9a; }
   .card-name{ margin:6px 0 12px; font-family:"Orbitron", sans-serif; font-weight:900; font-size:clamp(1.3rem,4vw,1.9rem);
     color:#fff6d6; letter-spacing:.02em; }
   .card-roles{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:10px; }
@@ -329,8 +356,8 @@
   <!-- 08.08.2026, Создатель: «прям под тор 2 кликабельные надписи — релиз 4, версия 1» — статус
        всего проекта целиком, не одного слова в цепочке, поэтому видно с самого начала. Релиз видят
        все — версия только локально (см. JS ниже), и версия растёт на каждое изменение файлов. -->
-  <span id="releaseLabel" class="release-label" role="button" tabindex="0">Релиз 4</span>
-  <span id="versionLabel" class="release-label" role="button" tabindex="0">Версия 21</span>
+  <span id="releaseLabel" class="release-label" role="button" tabindex="0">Релиз 4.1</span>
+  <span id="versionLabel" class="release-label" role="button" tabindex="0">Версия 14</span>
   <!-- 08.08.2026, Создатель: «нажимаю на релиз — сразу 2 карточки: слева презентация (аккуратно,
        что уже точно сделано), справа рабочий список (сюда буду добавлять/менять)». -->
   <div id="releaseCard" class="card" role="dialog" aria-modal="true" aria-hidden="true">
@@ -343,6 +370,9 @@
       </div>
       <div class="panel working-panel">
         <h2 id="releaseCardTitle" class="panel-title"></h2>
+        <!-- 07.08.2026, Андрей: «заполни карточку Релиз, там честно ответь — готовы к Релизу 5?» —
+             прямой вердикт сверху списка, не спрятан внутри пунктов. -->
+        <div id="releaseReadiness" class="release-readiness"></div>
         <div id="releaseCardBody"></div>
       </div>
     </div>
@@ -356,6 +386,10 @@
       <button class="card-close" type="button" aria-label="Закрыть">×</button>
       <div class="panel presentation-panel">
         <h2 class="panel-title">🎬 Презентация</h2>
+        <!-- 07.08.2026, Андрей: «нажимаю на версию — сразу вижу, о чём был прошлый разговор, что
+             сделано после него, что нужно уточнить, что вообще не сделано — полная картина». Эта
+             строка — короткий якорь «о чём был разговор», над списком сделанного. -->
+        <div id="versionSessionSummary" class="version-session-summary"></div>
         <div id="versionPresentationBody"></div>
       </div>
       <div class="panel working-panel">
@@ -386,9 +420,13 @@
     <div class="card-backdrop"></div>
     <div class="card-body">
       <button class="card-close" type="button" aria-label="Закрыть">×</button>
+      <!-- 08.08.2026, Создатель: «в medium-тор проектов вставь название — Best и так же все
+           проекты». У звезды в центре фото, у проекта фото нет — значит слово ложится прямо на
+           тор, тем же приёмом, что и главное слово на главном Кторе. -->
       <div id="cardPhotoWrap" class="card-photo-wrap" style="display:none">
         <canvas id="cardMiniTorus" class="card-mini-torus" aria-hidden="true"></canvas>
         <img id="cardPhoto" class="card-photo" alt="">
+        <span id="cardMiniTorusLabel" class="card-mini-torus-label" aria-hidden="true"></span>
       </div>
       <h2 id="cardName" class="card-name"></h2>
       <div id="cardRoles" class="card-roles"></div>

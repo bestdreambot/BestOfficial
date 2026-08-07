@@ -30,6 +30,10 @@ var PROJECTS = [
   { word:'Fovela',          aria:'Fovela. Проект.',          world:'fovela',          tiktok:'best_fovela',        ring:'spiral',   ringMs:1200, fx:'gold_enter'  },
   { word:'Grand Show',      aria:'Grand Show. Проект.',      world:'grand_show',      tiktok:'best.grand.show',    ring:'portal',   ringMs:1000, fx:'soft_only'   },
   { word:'Exclusive Stars', aria:'Exclusive Stars. Проект.', world:'exclusive_stars', tiktok:'best.exclusive.stars', ring:'wipe',   ringMs:1100, fx:'no_fx'       },
+  // 07.08.2026, Андрей нашёл ещё один проект: «бест ексклюзив мэн @best_exlusive.man, руководитель
+  // была Марина Анирам, последний клип в 2021 — уже 5 лет тишины». Ставлю рядом с Exclusive Stars —
+  // тот же смысловой ряд, разные миры/цвета, чтобы не путались при листании.
+  { word:'Exclusive Man',   aria:'Exclusive Man. Проект.',   world:'exclusive_man',   tiktok:'best_exlusive.man',  ring:'spiral',   ringMs:1200, fx:'streak_only' },
   { word:'Moon',            aria:'Moon. Проект.',            world:'moon',            tiktok:'best.moon.show',     ring:'wipe',     ringMs:1100, fx:'no_fx'       },
   // 07.08.2026, Создатель: «рок парти после моон» — переставлен с самого конца цепочки.
   { word:'Rock Party',      aria:'Rock Party. Проект.',      world:'rock_party',      tiktok:'best.rock.party',    ring:'burst',    ringMs:900,  fx:'no_fx'       },
@@ -41,7 +45,10 @@ var PROJECTS = [
   // PARTICIPANT_CHAIN — она больше не на проекте, добавлять ушедшего человека как активную звезду
   // не стал; если Создатель захочет её как историческую запись — отдельным явным словом.
   { word:'Dances',          aria:'Dances. Проект.',          world:'dances',          tiktok:'best.dances.show',   ring:'wipe',     ringMs:1100, fx:'no_fx'       },
-  { word:'Coffee',          aria:'Coffee. Проект.',          world:'coffee',          tiktok:'best.cofee.show',    ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
+  // 07.08.2026, Андрей подтвердил напрямую: `best.coffee.show`. Раньше в коде стояло `best.cofee.show`
+  // (опечатка, ссылка мертва) — архив сам называл `best.coffee.show` «старым хэндлом», но правильный
+  // адрес пришёл прямым словом, не из архива — см. правило про якорные данные в CLAUDE.md.
+  { word:'Coffee',          aria:'Coffee. Проект.',          world:'coffee',          tiktok:'best.coffee.show',    ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
   { word:'Detski',          aria:'Detski. Проект.',          world:'detski',          tiktok:'best.children.show', ring:'wipe',     ringMs:1100, fx:'no_fx'       },
   { word:'Dostar',          aria:'Dostar. Проект.',          world:'dostar',          tiktok:'best.dostar.show',  ring:'burst',    ringMs:900,  fx:'streak_only' },
   { word:'Finger Dance',    aria:'Finger Dance. Проект.',    world:'finger_dance',    tiktok:'best.finger.dance',  ring:'burst',    ringMs:900,  fx:'streak_only' },

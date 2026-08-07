@@ -36,6 +36,9 @@ var WORLDS = {
   dream:          shades(60,200,90),
   dualis:         shades(130,60,220),
   exclusive_stars:shades(190,220,90),
+  // Exclusive Man — найден Андреем 07.08.2026 (@best_exlusive.man), мужской проект: серо-стальной,
+  // приглушённый, чтобы не путать с зелёным Exclusive Stars и не дублировать красный Valmont.
+  exclusive_man:  shades(100,110,130),
   finger_dance:   shades(255,120,140),
   // Dances — электрический лаймовый, энергия движения, отдельный от Finger Dance (розовый).
   dances:         shades(140,255,60),
