@@ -95,15 +95,14 @@
   var LOAD_T = null, lastT = 0;
 
   var IGNITE_STAGGER = 1900, IGNITE_RAMP = 750;
-  // Баг 06.08.2026 (Создатель: «нажимаю Best 1 раз, ничего не происходит, нажимаю второй — Aleorix,
-  // а должен быть крутой эффект») — тор стартовал уже золотым (WORLDS.best), так что первый клик
-  // (переход BestOfficial → Best) transFrom===transTo, менять нечего, портал-переход шёл вхолостую.
-  // Сверился с историей origin (git show 3374029:js/torus.js): там по умолчанию серебро (WORLDS.
-  // freex, Release 1.1: «мир по умолчанию стал серебряным... клик по слову превращает его в Best и
-  // только тогда тор становится золотым»). Возвращаем этот же принцип — первый клик теперь реально
-  // красит тор в золото, с портал-эффектом, как задумано.
-  var transFrom = WORLDS.freex, transTo = WORLDS.freex, transStart = -1e9, transDurationMs = 1400;
-  var curPalette = WORLDS.freex;
+  // 06.08.2026 default был золотым (WORLDS.best) → баг «жму Best — ничего не меняется, жми ещё раз».
+  // Тогда вернули серебро по умолчанию (как origin, git show 3374029:js/torus.js). 08.08.2026,
+  // Создатель сравнил с портом 1000 («я хочу как на 1000... на 2000 сейчас серебряно») и явно выбрал
+  // золото по умолчанию, зная про возврат этого бага («сделать полностью золотым как на 1000») —
+  // осознанный выбор, не забытый баг. Если «два клика на Best» снова всплывёт — это уже другое, не
+  // то же самое старое диагностирование, честно предупреждён заранее.
+  var transFrom = WORLDS.best, transTo = WORLDS.best, transStart = -1e9, transDurationMs = 1400;
+  var curPalette = WORLDS.best;
   var lastToggleT = null;
   // 05.08.2026, «смотри внимательно на github.com/bestdreambot/BestOfficial, логику ты уже близко» —
   // сверился с настоящим app.js/torus.js оттуда: у каждого шага цепочки свой почерк ПЕРЕХОДА ТОРА
@@ -384,7 +383,22 @@
   var stageEl = document.getElementById('stage'), holePhotoEl = document.getElementById('holePhoto');
   var cardEl = document.getElementById('card');
   var cardNameEl = document.getElementById('cardName'), cardRolesEl = document.getElementById('cardRoles'), cardFactsEl = document.getElementById('cardFacts');
-  var cardPhotoEl = document.getElementById('cardPhoto');
+  var cardStatsEl = document.getElementById('cardStats');
+  var cardPhotoEl = document.getElementById('cardPhoto'), cardPhotoWrapEl = document.getElementById('cardPhotoWrap');
+  // 08.08.2026, Создатель: «под тор 2 кликабельные надписи — релиз/версия, у релиза 3 зелёных/
+  // 3 жёлтых/3 красных». Отдельная маленькая карточка, не смешиваем с проектами/звёздами.
+  var releaseLabelEl = document.getElementById('releaseLabel'), versionLabelEl = document.getElementById('versionLabel');
+  var releaseCardEl = document.getElementById('releaseCard');
+  var releaseCardTitleEl = document.getElementById('releaseCardTitle'), releaseCardBodyEl = document.getElementById('releaseCardBody');
+  // 08.08.2026, Создатель: «нажимаю релиз — сразу 2 карточки: слева презентация, справа рабочий
+  // список» — презентация живёт в той же модалке releaseCard, вторая панель. Версия — отдельная
+  // простая модалка (versionCard), сюда не входит.
+  var presentationBodyEl = document.getElementById('presentationBody');
+  var versionCardEl = document.getElementById('versionCard');
+  var versionCardTitleEl = document.getElementById('versionCardTitle'), versionCardBodyEl = document.getElementById('versionCardBody');
+  // 08.08.2026, Создатель: «версия — своя карточка, вижу только я» — та же пара Презентация/Процесс,
+  // что и у Релиза/любой карточки, но про сам локальный порт (техническая сторона).
+  var versionPresentationBodyEl = document.getElementById('versionPresentationBody');
   function showHolePhoto(p){
     holePhotoEl.src = PARTICIPANT_PHOTOS[p.photo] || '';
     holePhotoEl.classList.toggle('leader', !!p.leader);
@@ -401,9 +415,9 @@
   // draw-loop выше не трогает и не вызывает её саму — рисуется отдельно, ниже, в общем rAF. LEFT
   // красится в mktorLeftPal (текущий мир/звезда, обновляется в activateProject/enterParticipant/
   // toggleParticipantsMode/goHome), RIGHT — всегда WORLDS.best. ----------
-  // По умолчанию тоже серебро (freex), не золото — та же правка, что у главного тора выше; LEFT
+  // 08.08.2026: по умолчанию золото (WORLDS.best), та же правка, что у главного тора выше — LEFT
   // сам не виден до первого клика (см. .nav-btn.show), но значение должно быть честным на всякий.
-  var mktorLeftPal = WORLDS.freex;
+  var mktorLeftPal = WORLDS.best;
   function setMktorLeft(pal){ mktorLeftPal = pal; drawMktor(navLeftCanvas, pal, 0); }
   var mktorLunoraPal = WORLDS.lunora;
   function setMktorLunora(pal){ mktorLunoraPal = pal; drawMktor(navLunoraCanvas, pal, 0); }
@@ -507,6 +521,12 @@
   function activateProject(i){
     var proj = PROJECTS[i];
     wordState = i + 1;
+    // 08.08.2026, Создатель: «релиз и версия видны только на главной странице BestOfficial, при
+    // переходе должны просто исчезать — чтобы вернуться, нужно перезагрузить страницу». activateProject —
+    // общие ворота для ЛЮБОГО перехода (клик по слову, goHome, участники, Lunora идёт через Best),
+    // поэтому одно место гасит обе кнопки навсегда до следующей полной перезагрузки страницы.
+    releaseLabelEl.style.display = 'none';
+    versionLabelEl.style.display = 'none';
     // 06.08.2026: Lunora больше не бывает в PROJECTS вообще (убрана из цепочки Best), так что
     // proj.word==='Lunora' здесь больше не встречается — но lunoraMode на всякий случай гасим
     // всегда, если вдруг сюда попали не через enterLunora() (например, клик по обычному слову).
@@ -612,39 +632,231 @@
   holePhotoEl.addEventListener('click', onWordActivate);
 
   function renderPills(el, labels){ el.innerHTML = labels.map(function(r){ return '<span class="card-pill">'+r+'</span>'; }).join(''); }
+  // 08.08.2026, Создатель: «нажимаю релиз — 3 зелёных/3 жёлтых/3 красных... все карточки хочу
+  // видеть в таком формате» — один общий рендер для Релиза, любого проекта и любой звезды:
+  // 🟢 известно точно, 🟡 уточняется/неполно, 🔴 нужно узнать. Единый вид на весь сайт.
+  function statusGroup(icon, title, items){
+    if(!items || !items.length) return '';
+    return '<div class="release-group"><div class="release-group-title">'+icon+' '+title+'</div>'
+      + items.map(function(t){ return '<div class="release-item">'+t+'</div>'; }).join('') + '</div>';
+  }
+  // 08.08.2026, Создатель (на примере карточки Гали): «то, что известно и уже перешло в
+  // презентацию, можешь не показывать [в процессе] — думай о новых задачах, планах, идеях и
+  // записывай это в процесс». Значит «Процесс» больше не повторяет зелёное (оно уже слева, в
+  // презентации) — только 🟡 в работе / 🔴 нужно узнать, чтобы не дублировать одно и то же дважды.
+  function renderStatusCard(el, yellow, red){
+    el.innerHTML = statusGroup('🟡','В работе', yellow) + statusGroup('🔴','Нужно узнать', red);
+  }
+  // 08.08.2026, Создатель: «слева то, как это должно быть — эталон, что уже сделано и что вау;
+  // справа то, что происходит, чтобы презентация выглядела насыщеннее» — презентация везде (и в
+  // Релизе, и на любой карточке проекта/звезды) рендерится этой функцией: только подтверждённое
+  // (зелёное), звёздными иконками, без сухих заголовков групп.
+  var PRESENTATION_ICONS = ['⭐','🌟','✨','💫','🌠'];
+  function renderPresentation(el, items){
+    if(!items || !items.length){
+      el.innerHTML = '<div class="presentation-item">🌌 Пока нет ни одного подтверждённого факта — эталон появится, как только он будет</div>';
+      return;
+    }
+    el.innerHTML = items.map(function(t, i){ return '<div class="presentation-item">'+PRESENTATION_ICONS[i % PRESENTATION_ICONS.length]+' '+t+'</div>'; }).join('');
+  }
   // 07.08.2026: Олеся больше не «готовится» — она реальная звезда в PARTICIPANT_CHAIN с
   // leads:['Valmont'], карточка Valmont теперь находит её сама через обычный leaders-поиск ниже.
   var PROJECT_PENDING_LEADS = {};
   // 06.08.2026, Создатель: «запиши это всё в карточку Anibrox... почту не показывать, системный
   // аккаунт не показывать, что обсуждал — не показывать, пиши факты, презентацию проекта». Только
   // то, что можно показать всем — реальная история имени и кто ведёт, ничего внутреннего/приватного.
+  // 08.08.2026, Создатель: «покажи это всё в карточках, чтобы все понимали и по возможности и
+  // желанию участвовали» — архивный аудит (все .md кроме ODP/Freexi) по проектам без руководителя
+  // теперь виден прямо в карточке, не только в чате. Только подтверждённые архивом факты — где
+  // архив ничего не знает, показываем открытый вопрос как есть, не гадаем.
   var PROJECT_FACTS = {
-    'Anibrox': ['Раньше назывался Friend — теперь Anibrox', 'Второй проект под руководством Алины, вместе с Aleorix']
+    'Anibrox':          ['Раньше назывался Friend — теперь Anibrox', 'Второй проект под руководством Алины, вместе с Aleorix'],
+    'Grand Show':       ['Раньше вела Таня — ушла, точная дата неизвестна'],
+    'Exclusive Stars':  ['Один из самых первых проектов Best', 'Раньше вела Марика — ушла с роли'],
+    'Dances':           ['Раньше вела Нюта — ушла примерно год назад'],
+    'Vanila':           ['Раньше вели Катрин, затем пробовала Валя — не пошло', 'Последняя запись — 10.04.2026 («вдохновение не приходит»)'],
+    'Tiretok':          ['Прошлый руководитель ушёл, точная дата неизвестна', 'Рекламный проект — название придумал сам Создатель'],
+    'Voice':            ['Пока только идея — 0 клипов, ни одного факта, кроме названия'],
+    'Dostar':           ['Раньше назывался Kazakh — переименован в Dostar'],
+    'Coffee':           ['Само название пока «можно обдумать» — ещё не устоялось']
   };
   function openCard(){ cardEl.classList.add('open'); cardEl.setAttribute('aria-hidden','false'); }
-  function closeCard(){ cardEl.classList.remove('open'); cardEl.setAttribute('aria-hidden','true'); }
+  function closeCard(){ cardEl.classList.remove('open'); cardEl.setAttribute('aria-hidden','true'); cardMiniTorusVisible = false; }
+  // 07.08.2026, Создатель: «Клипов вышло [статус], когда первый, когда последний, сколько
+  // участников — там где информации у тебя нет, ставишь красный кружок и вопросительный знак. По
+  // мере получения информации от каждого руководителя проектов будем заполнять». 08.08.2026: те же
+  // цифры теперь разложены по группам 🟢/🟡/🔴 (см. statusGroup выше), а не отдельным блоком —
+  // единый формат карточки везде. Никогда не выдумываем значение — только то, что реально вписано
+  // в PROJECTS/PARTICIPANT_CHAIN (clipCount / firstClip / lastClip / memberCount, см. комментарий в
+  // data-projects.js).
+  function clipStatus(lastClip){
+    if(!lastClip) return null;
+    var days = Math.floor((Date.now() - new Date(lastClip).getTime()) / 86400000);
+    if(isNaN(days)) return null;
+    if(days <= 14) return 'green';
+    if(days <= 30) return 'yellow';
+    return 'red';
+  }
+  function pushClipFacts(green, yellow, red, item, withMembers, memberCountOverride){
+    if(item.clipCount){ green.push('Клипов: '+item.clipCount); } else { red.push('Количество клипов неизвестно'); }
+    if(item.firstClip){ green.push('Первый клип: '+item.firstClip); } else { red.push('Дата первого клипа неизвестна'); }
+    var status = clipStatus(item.lastClip);
+    if(item.lastClip){
+      if(status === 'green'){ green.push('Последний клип: '+item.lastClip+' — проект активен'); }
+      else if(status === 'yellow'){ yellow.push('Последний клип: '+item.lastClip+' — активность замедлилась'); }
+      else { red.push('Последний клип: '+item.lastClip+' — давно тишина'); }
+    } else { red.push('Дата последнего клипа неизвестна'); }
+    if(withMembers){
+      var mc = (memberCountOverride !== undefined) ? memberCountOverride : item.memberCount;
+      if(mc !== undefined){ green.push('Участников: '+mc); } else { red.push('Количество участников неизвестно'); }
+    }
+  }
   function openStarCard(p){
     var extra = PARTICIPANTS.filter(function(x){ return x.handle === p.handle; })[0] || {};
     var photo = PARTICIPANT_PHOTOS[p.photo];
-    if(photo){ cardPhotoEl.src = photo; cardPhotoEl.style.display = ''; } else { cardPhotoEl.style.display = 'none'; }
+    if(photo){
+      cardPhotoEl.src = photo; cardPhotoWrapEl.style.display = '';
+      // display был 'none' — clientWidth ещё 0, поэтому размер миниатюрного тора считаем ПОСЛЕ показа.
+      resizeMiniTorus(); cardMiniTorusVisible = true;
+    } else {
+      cardPhotoWrapEl.style.display = 'none'; cardMiniTorusVisible = false;
+    }
     cardNameEl.textContent = p.word;
-    var roles = [p.badge || 'Звезда Best'].concat((p.leads||[]).map(function(l){ return 'Руководитель '+l; }));
-    renderPills(cardRolesEl, roles);
-    var facts = [];
-    if(extra.nick && extra.nick !== p.word){ facts.push('В TikTok: '+extra.nick); }
-    cardFactsEl.innerHTML = facts.map(function(f){ return '<p class="card-fact">✨ '+f+'</p>'; }).join('');
+    // 08.08.2026, Создатель (на примере Гали): «после имени оставь только руководитель Best» —
+    // верхняя пилюля больше не дублирует весь список leads, только сам статус/badge.
+    renderPills(cardRolesEl, [p.badge || 'Звезда Best']);
+    // «в презентации роль руководитель Best убери, оставь руководитель News и Jelly» — presentation
+    // не повторяет badge (он уже наверху), только реальные leads-факты.
+    var green = [], yellow = [], red = [];
+    (p.leads||[]).forEach(function(l){ green.push('Руководитель '+l); });
+    if(extra.nick && extra.nick !== p.word){ green.push('В TikTok: '+extra.nick); }
+    pushClipFacts(green, yellow, red, p, false);
+    renderPresentation(cardFactsEl, green);
+    renderStatusCard(cardStatsEl, yellow, red);
     openCard();
   }
   function openProjectCard(proj){
-    cardPhotoEl.style.display = 'none'; // у проектов своего фото нет — «пустую голову» не открываем
+    cardPhotoWrapEl.style.display = 'none'; cardMiniTorusVisible = false; // у проектов своего фото нет — «пустую голову» не открываем
     cardNameEl.textContent = proj.word;
     var leaders = proj.word === 'Best' ? ['Галя'] : PARTICIPANT_CHAIN.filter(function(p){ return p.leads && p.leads.indexOf(proj.word)!==-1; }).map(function(p){ return p.word; });
     if(!leaders.length && PROJECT_PENDING_LEADS[proj.word]){ leaders = [PROJECT_PENDING_LEADS[proj.word]]; }
-    renderPills(cardRolesEl, leaders.length ? ['Руководит: '+leaders.join(', ')] : []);
-    var facts = PROJECT_FACTS[proj.word] || [];
-    cardFactsEl.innerHTML = facts.map(function(f){ return '<p class="card-fact">✨ '+f+'</p>'; }).join('');
+    // 07.08.2026, Создатель: «надпись должна быть руководитель Галя» — тот же вид, что на карточке
+    // самой звезды («Руководитель Best»), а не короткое «Руководит: …».
+    // 08.08.2026: если руководителя нет вообще — красная пилюля вместо пустого места, видно сразу.
+    renderPills(cardRolesEl, leaders.length ? leaders.map(function(l){ return 'Руководитель '+l; }) : ['🔴 Руководителя нет']);
+    // 08.08.2026: тот же принцип, что у звёзд — руководитель уже виден в пилюлях наверху,
+    // презентация его не повторяет, только дополнительные факты.
+    var green = [], yellow = [], red = [];
+    if(!leaders.length){
+      red.push('Руководителя нет — если хочешь взяться, дай знать Создателю!');
+      red.push('Когда ушёл прошлый руководитель — неизвестно');
+      red.push('Нужно ли новое название — не решено');
+      red.push('Актуален ли текущий хэштег — не проверено');
+    }
+    (PROJECT_FACTS[proj.word] || []).forEach(function(f){ green.push(f); });
+    // 07.08.2026, Создатель: «участников — это звёзды, сколько торов звёзд на Best?» — у Best
+    // список звёзд реально есть в коде (PARTICIPANT_CHAIN), считаем сами, не ждём ручного числа.
+    // У остальных проектов такого общего списка участников нет (только leads — руководители),
+    // поэтому там пока вручную через memberCount, как раньше.
+    pushClipFacts(green, yellow, red, proj, true, proj.word === 'Best' ? PARTICIPANT_CHAIN.length : undefined);
+    renderPresentation(cardFactsEl, green);
+    renderStatusCard(cardStatsEl, yellow, red);
     openCard();
   }
+  // 08.08.2026, Создатель: «нажимаю релиз — 3 зелёных самых важных изменения, 3 жёлтых над чем
+  // сейчас работает весь проект, 3 красных что ещё не сделано и нужно всем об этом подумать».
+  // Только реальные факты этой сессии/аудита — ничего не выдумываем, как и везде в карточках.
+  // 08.08.2026, Создатель: «вместо Релиз 4 напиши слово Процесс» — заголовок правой панели теперь
+  // общий с любой карточкой проекта/звезды («Процесс»), не завязан на номер релиза. Кнопка под
+  // тором («Релиз 4») не переименована — это отдельная внешняя метка входа, не заголовок панели.
+  // 08.08.2026, Создатель (на примере карточки Гали): «то, что известно и уже перешло в
+  // презентацию, можешь не показывать [в процессе] — думай о новых задачах, планах, идеях». У
+  // RELEASE_INFO больше нет своего green — presentation здесь ведёт отдельный PRESENTATION_INFO
+  // ниже (про сам продукт), а «Процесс» — только то, что реально в работе или ещё не решено.
+  var RELEASE_INFO = {
+    title: 'Процесс',
+    yellow: [
+      'Старые файлы проектов (23.07.2026) и новый список руководителей (01.08.2026) во многом расходятся — сверяем, кто реально ведёт Fovela/Moon/Nerix/Dualis/Jelly',
+      'Ждём ответов от руководителей по своим проектам — Гале отправлен вопрос ещё 22.07.2026, ответа пока нет',
+      'Ищем новое имя для Valmont вместе с Олесей — старое ей не нравится',
+      'Поиск лучшего светового элемента для тора BestOfficial — вариант 1 (сильнее halo/drop-shadow) не подошёл, вернулись к структуре канона (порт 1000), пробуем дальше другим путём',
+      'Марике (жене Создателя) и самому Создателю тоже понадобится свой тор — куда и как их показать, решение за Создателем',
+      'Отдельный, более глубокий аудит хэштегов по всем проектам — не просто «актуален ли», а полная сверка',
+      'Medium-тор вокруг фото звезды — только на Гале проверен вживую, остальные карточки со своим фото ещё не смотрели'
+    ],
+    red: [
+      'У большинства проектов (Coffee, Detski, Dostar, ISR, Past Legends, Voice, Dream, News, Grand Show и других) руководитель до сих пор не назначен вообще',
+      'Voice — только идея, 0 клипов, ни одного факта, кроме названия',
+      'Никто ни разу не сверял архивные записи напрямую с самими людьми — только с Telegram/Notion крупицами, это надо решить всем вместе'
+    ]
+  };
+  // 08.08.2026, Создатель: «каждое изменение ты меняешь версию» — стандартное правило с этого
+  // момента: title здесь и текст в HTML (#versionLabel) растут на 1 при каждой правке файлов,
+  // тем же движением, что версия у самого freex/bestofficial (см. CLAUDE.md того проекта).
+  // 08.08.2026, уточнение: «версия — своя карточка, вижу только я, слева что уже сделано и точно
+  // работает, справа что в процессе» — та же Презентация/Процесс, но про техническую сторону
+  // локального порта (код/функции), а не про сообщество Best — это уже в «Релизе».
+  var VERSION_INFO = {
+    title: 'Процесс',
+    green: [
+      'Уникальный тор BestOfficial — построен и работает',
+      'Формат «Презентация / Процесс» — теперь на каждой карточке проекта и звезды, не только здесь',
+      'Релиз и Версия под тором — кликабельны, версия растёт сама с каждой правкой файлов',
+      'Lunora/Noira/Zaryum — отдельный вход сверху слева, полностью рабочий'
+    ],
+    yellow: [
+      'Позиционирование надписей под тором — донастраивается на глаз по обратной связи'
+    ],
+    red: [
+      'Формат карточек ещё не проверен вживую на всех 26 проектах и 16 звёздах подряд'
+    ]
+  };
+  // 08.08.2026, Создатель: «без особых объяснений — сейчас мы говорим только про BestOfficial, это
+  // заглавная страница всего проекта и сейчас в разработке. Разработан уникальный тор BestOfficial,
+  // видно как он менялся от релиза к релизу. Единственная функция на данный момент — открыть тор
+  // Best нажатием на слово BestOfficial». Презентация — не техническая (не про карточки/аудит,
+  // это отдельный рабочий список справа), а про сам продукт: коротко, по делу, звёздными иконками.
+  // 08.08.2026, Создатель поправил: «видно как тор менялся от релиза к релизу» — это нигде реально
+  // не видно, убрал; презентация показывает только то, что действительно уже есть на экране.
+  var PRESENTATION_INFO = [
+    'BestOfficial — заглавная страница всего проекта',
+    'Сейчас в разработке',
+    'Разработан уникальный тор BestOfficial',
+    'Пока единственное действие — нажать на слово BestOfficial и открыть тор Best'
+  ];
+  function openReleaseCard(){
+    renderPresentation(presentationBodyEl, PRESENTATION_INFO);
+    releaseCardTitleEl.textContent = RELEASE_INFO.title;
+    releaseCardBodyEl.innerHTML =
+      statusGroup('🟡','В работе', RELEASE_INFO.yellow) +
+      statusGroup('🔴','Нужно решить', RELEASE_INFO.red);
+    releaseCardEl.classList.add('open'); releaseCardEl.setAttribute('aria-hidden','false');
+  }
+  function closeReleaseCard(){ releaseCardEl.classList.remove('open'); releaseCardEl.setAttribute('aria-hidden','true'); }
+  function openVersionCard(){
+    renderPresentation(versionPresentationBodyEl, VERSION_INFO.green);
+    versionCardTitleEl.textContent = VERSION_INFO.title;
+    versionCardBodyEl.innerHTML =
+      statusGroup('🟡','В работе', VERSION_INFO.yellow) +
+      statusGroup('🔴','Нужно решить', VERSION_INFO.red);
+    versionCardEl.classList.add('open'); versionCardEl.setAttribute('aria-hidden','false');
+  }
+  function closeVersionCard(){ versionCardEl.classList.remove('open'); versionCardEl.setAttribute('aria-hidden','true'); }
+  releaseLabelEl.addEventListener('click', openReleaseCard);
+  releaseLabelEl.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openReleaseCard(); } });
+  // 08.08.2026, Создатель: «релиз будут видеть все версии, версию буду видеть только я локально» —
+  // прячем «Версия» на публичном хосте (Vercel), оставляем только на локальном сервере разработки.
+  var isLocalHost = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+  if(isLocalHost){
+    versionLabelEl.addEventListener('click', openVersionCard);
+    versionLabelEl.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openVersionCard(); } });
+  } else {
+    versionLabelEl.style.display = 'none';
+  }
+  releaseCardEl.querySelector('.card-backdrop').addEventListener('click', closeReleaseCard);
+  releaseCardEl.querySelector('.card-close').addEventListener('click', closeReleaseCard);
+  versionCardEl.querySelector('.card-backdrop').addEventListener('click', closeVersionCard);
+  versionCardEl.querySelector('.card-close').addEventListener('click', closeVersionCard);
   // LEFT = «Звёзды» / контекст. Эталон app.js handleFom2Activate (репо BestOfficial):
   //   • уже в режиме звёзд → карточка ТЕКУЩЕЙ звезды
   //   • на проекте ПОСЛЕ Best (wordState >= 2) → карточка этого проекта
@@ -691,7 +903,7 @@
   navLunora.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handleNavLunora(); } });
   cardEl.querySelector('.card-backdrop').addEventListener('click', closeCard);
   cardEl.querySelector('.card-close').addEventListener('click', closeCard);
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeCard(); } });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeCard(); closeReleaseCard(); closeVersionCard(); } });
 
   // 06.08.2026: убран безусловный таймер показа mktor от момента загрузки (было 2200мс всегда).
   // На главной BestOfficial (до первого клика по слову) mktor теперь не появляется вовсе — см.
@@ -707,13 +919,36 @@
   // bright:true, ждёт своей очереди, как и остальные — только вход в неё особый, напрямую).
   drawMktor(navLunoraCanvas, dimPalette(WORLDS.lunora), 0);
 
+  // 08.08.2026, Создатель: «медиум тор — возьми Ктор и сделай в 10 раз меньше, вокруг фото Гали в
+  // карточке». Не отдельная копия системы частиц (дублировала бы всю физику ради одной картинки) —
+  // прямой слепок УЖЕ отрисованного главного канваса через drawImage: тот же цвет/движение, что и
+  // основной тор (он уже показывает палитру текущей звезды/проекта, см. setMktorLeft/enterWorld),
+  // просто уменьшенный. cardMiniTorusVisible включается только когда открыта карточка звезды с
+  // фото — на проектах (своего фото нет) и когда карточка закрыта эта отрисовка не идёт вообще.
+  var cardMiniTorusCanvas = document.getElementById('cardMiniTorus');
+  var cardMiniTorusCtx = cardMiniTorusCanvas ? cardMiniTorusCanvas.getContext('2d') : null;
+  var cardMiniTorusVisible = false;
+  function resizeMiniTorus(){
+    if(!cardMiniTorusCanvas) return;
+    var mw = cardMiniTorusCanvas.parentElement.clientWidth, mh = cardMiniTorusCanvas.parentElement.clientHeight;
+    if(!mw || !mh) return;
+    cardMiniTorusCanvas.width = mw*dpr; cardMiniTorusCanvas.height = mh*dpr;
+    cardMiniTorusCanvas.style.width = mw+'px'; cardMiniTorusCanvas.style.height = mh+'px';
+  }
+  window.addEventListener('resize', resizeMiniTorus);
+  function copyMiniTorus(){
+    if(!cardMiniTorusVisible || !cardMiniTorusCtx) return;
+    cardMiniTorusCtx.clearRect(0, 0, cardMiniTorusCanvas.width, cardMiniTorusCanvas.height);
+    cardMiniTorusCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, cardMiniTorusCanvas.width, cardMiniTorusCanvas.height);
+  }
+
   // ---------- Запуск: главный тор в своём rAF-цикле (mktor в него не входит — статичный). Здесь, в
   // самом конце файла, потому что draw()/navLeftCanvas и т.д. объявлены выше в этом же файле. Сам
   // draw(t) (главный тор) не менялся ни строчкой ради mktor. ----------
-  if(reduced){ draw(0); }
+  if(reduced){ draw(0); copyMiniTorus(); }
   else {
     var raf=null;
-    function loop(t){ draw(t); raf=requestAnimationFrame(loop); }
+    function loop(t){ draw(t); copyMiniTorus(); raf=requestAnimationFrame(loop); }
     raf=requestAnimationFrame(loop);
     document.addEventListener('visibilitychange', function(){
       if(document.hidden){ if(raf){ cancelAnimationFrame(raf); raf=null; } }

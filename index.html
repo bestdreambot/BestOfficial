@@ -39,6 +39,13 @@
     display:flex; align-items:center; justify-content:center;
     container-type: inline-size;
   }
+  /* 08.08.2026, Создатель: «зажги главный тор, дай ему мощи, попробуем варианты» — Вариант 1
+     (сильнее halo + двойной drop-shadow) не подошёл: «смотри внимательно на порт 1000, там идеал,
+     вот как было». Порт 1000 (freexofficial.html, корень, канон) — тот же halo/drop-shadow/breathe
+     один в один, только синий тон вместо золотого. Значит сама структура/сила свечения — это и есть
+     эталон, менять её не нужно; вернул исходные значения BestOfficial (только золотой тон — то, чем
+     он и отличается от канона по праву). Поиск светового усиления продолжается другим путём, не
+     через интенсивность этого фильтра — см. «Процесс» → «поиск лучшего светового элемента». */
   .stage::before{
     content:""; position:absolute; inset:12%; border-radius:50%;
     background:radial-gradient(circle, transparent 30%, rgba(255,224,150,.10) 52%, rgba(255,200,120,.055) 63%, transparent 74%);
@@ -113,6 +120,42 @@
   .tiktok-link.show{ opacity:1; pointer-events:auto; }
   .tiktok-link:hover, .tiktok-link:focus-visible{ color:rgba(244,226,186,0.98); }
   @media (prefers-reduced-motion: reduce){ .tiktok-link{ transition:none; opacity:1; pointer-events:auto; } }
+
+  /* 08.08.2026, Создатель: «прям под тор 2 кликабельные надписи — релиз 4, версия 1» — статус
+     всего проекта целиком (не одного слова/проекта в цепочке), поэтому видно всегда, не только на
+     шаге Best, и не прячется вместе с mktor/tiktok-ссылкой. */
+  /* 08.08.2026, Создатель: «нужно ниже, чтобы не касались тора» — тор (.stage) сам по себе квадрат
+     min(88vmin,920px), значит его нижний край — center + min(44vmin,460px). Кладём полосу за этим
+     краем + отступ, но не ниже видимой области.
+     08.08.2026, снова рядом: «релиз по середине, версия справа от релиза» — «Релиз» стоит на
+     оси 50% сам по себе (left:50%, translateX(-50%)) — его позиция ничем не зависит от «Версии».
+     «Версия» стартует своим ЛЕВЫМ краем на фиксированном отступе от центра (translateX(0), не
+     -50%), поэтому не может наехать на «Релиз» независимо от длины текста той или другой надписи.
+     Версия — только локально (см. JS, скрывается на публичном хосте). */
+  .release-label{
+    position:fixed; top:min(calc(50% + min(44vmin, 460px) + 22px), calc(100% - 42px));
+    z-index:5; opacity:0; animation: wordIn 1.6s cubic-bezier(.16,.9,.25,1) .9s forwards;
+    font-family:"Cinzel", Georgia, "Times New Roman", serif;
+    font-size:clamp(10px, 1.3vmin, 12px); letter-spacing:.14em; text-transform:uppercase; font-weight:600;
+    color:rgba(224,204,164,.7); cursor:pointer; padding:3px 11px;
+    border:1px solid rgba(255,214,140,.2); border-radius:100px;
+    transition:color .2s ease, border-color .2s ease, background .2s ease;
+  }
+  /* 08.08.2026: лёгкая ручная поправка влево — letter-spacing/паддинг у текста визуально «тянут»
+     центр надписи чуть вправо от геометрического центра рамки, эта правка компенсирует именно
+     оптику, не меняя позицию «Версии». */
+  #releaseLabel{ left:calc(50% - 14px); transform:translateX(-50%); }
+  #versionLabel{ left:calc(50% + 70px); transform:translateX(0); opacity:.6; }
+  .release-label:hover, .release-label:focus-visible{ color:#ffd558; border-color:rgba(255,213,88,.45); background:rgba(255,213,88,.06); }
+  @media (prefers-reduced-motion: reduce){ .release-label{ animation:none; opacity:1; } #versionLabel{ opacity:.6; } }
+  .release-group{ margin:14px 0 0; text-align:left; }
+  .release-group:first-of-type{ margin-top:4px; }
+  .release-group-title{
+    font-family:"Cinzel", serif; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    display:flex; align-items:center; gap:7px; margin-bottom:6px; color:rgba(230,220,200,.75);
+  }
+  .release-item{ margin:5px 0; font-family:Georgia, serif; font-size:13px; line-height:1.4; color:rgba(230,220,200,.85); padding-left:17px; }
+  .release-note{ font-family:Georgia, serif; font-size:13px; line-height:1.5; color:rgba(230,220,200,.85); text-align:center; }
 
   /* 05.08.2026, повторный аудит Grok (ai/GROK.md § «повторный аудит 2000 · mktor вернуть»):
      предыдущий заход («самоцвет»-кружок вместо canvas-мини-тора) исполнил прошлый совет Grok
@@ -191,9 +234,15 @@
      Мы это решение потеряли при клоне и снова рисовали имя под фото. Возврат к эталону: слово
      прячется совсем, пока показано фото — имя видно только один раз, в mktor слева. */
   .stage.photo-mode .word{ opacity:0; visibility:hidden; pointer-events:none; }
+  /* 08.08.2026, Создатель: «медиум тор — возьми Ктор и сделай в 10 раз меньше, вокруг фото Гали
+     в карточке». Не отдельная копия физики частиц (дорого, дублирует систему) — слепок уже
+     отрисованного главного канваса (drawImage в JS), тот же цвет/движение, просто уменьшенный, за
+     фото, кольцом вокруг него. */
+  .card-photo-wrap{ position:relative; width:min(38vw, 156px); aspect-ratio:1/1; margin:0 auto 12px; }
+  .card-mini-torus{ position:absolute; inset:0; width:100%; height:100%; }
   .card-photo{
-    width:min(30vw, 120px); aspect-ratio:1/1; border-radius:50%; object-fit:cover;
-    margin:0 auto 12px; display:block;
+    position:absolute; inset:14%; width:72%; height:72%; margin:0;
+    border-radius:50%; object-fit:cover;
     box-shadow: 0 0 0 1px rgba(255,214,140,.35), 0 0 18px rgba(255,200,110,.25);
   }
 
@@ -213,6 +262,28 @@
     border:1px solid rgba(255,214,140,.25); background:rgba(255,255,255,.04); color:rgba(255,224,170,.85);
     font-size:18px; line-height:1; cursor:pointer;
   }
+  /* 08.08.2026, Создатель: «нажимаю релиз — сразу 2 карточки: слева презентация, справа рабочий
+     список» — одна модалка, две панели рядом (на узком экране сами переносятся друг под друга —
+     презентация первой, как «слева» и есть по чтению).
+     08.08.2026, распространено на ЛЮБУЮ карточку проекта/звезды (#card) — та же пара «Презентация
+     | Процесс», просто под общей шапкой (фото/имя/роли), а не с самого верха модалки. */
+  #releaseCardBodyWrap, #versionCardBodyWrap, #card .card-body{
+    max-width:min(94vw, 820px);
+  }
+  #releaseCardBodyWrap, #versionCardBodyWrap{ display:flex; gap:22px; flex-wrap:wrap; text-align:left; }
+  .card-panels{ display:flex; gap:22px; flex-wrap:wrap; text-align:left; margin-top:14px; }
+  .panel{ flex:1 1 260px; min-width:220px; }
+  .panel-title{
+    margin:6px 0 12px; font-family:"Orbitron", sans-serif; font-weight:900;
+    font-size:clamp(1rem,2.6vw,1.3rem); color:#fff6d6; letter-spacing:.02em; text-align:center;
+  }
+  .presentation-panel{
+    border-right:1px solid rgba(255,214,140,.16); padding-right:22px;
+  }
+  @media (max-width: 640px){ .presentation-panel{ border-right:none; border-bottom:1px solid rgba(255,214,140,.16); padding-right:0; padding-bottom:18px; } }
+  .presentation-item{
+    margin:8px 0; font-family:Georgia, serif; font-size:13px; line-height:1.5; color:rgba(230,220,200,.92);
+  }
   .card-name{ margin:6px 0 12px; font-family:"Orbitron", sans-serif; font-weight:900; font-size:clamp(1.3rem,4vw,1.9rem);
     color:#fff6d6; letter-spacing:.02em; }
   .card-roles{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:10px; }
@@ -222,6 +293,21 @@
     border-radius:100px; padding:4px 12px;
   }
   .card-fact{ margin:6px 0; font-family:Georgia, serif; font-size:13px; color:rgba(230,220,200,.85); }
+  /* 07.08.2026, Создатель: «нужно подумать сколько клипов, когда выходил последний, когда первый
+     и прям в карточке отмечать красные кружочки которые показывают статус» — источник данных: сам
+     Создатель смотрит в TikTok, поля заполняются вручную (см. data-projects.js/data-participants.js
+     верхний комментарий). Пока поле не заполнено — блок просто не рисуется, никаких выдуманных цифр. */
+  .card-stats{ margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,214,140,.14); }
+  .card-stat-line{ margin:4px 0; font-family:Georgia, serif; font-size:12px; color:rgba(230,220,200,.7);
+    display:flex; align-items:center; justify-content:center; gap:6px; }
+  .status-dot{ display:inline-block; width:9px; height:9px; border-radius:50%; flex:none; }
+  .status-dot.green{ background:#3ecf6a; box-shadow:0 0 7px rgba(62,207,106,.7); }
+  .status-dot.yellow{ background:#ffcc33; box-shadow:0 0 7px rgba(255,204,51,.7); }
+  .status-dot.red{ background:#ff4444; box-shadow:0 0 7px rgba(255,68,68,.7); }
+  /* 07.08.2026, Создатель: «где информации нет — красный кружок и вопросительный знак» — отдельный
+     более крупный кружок с «?» внутри, для строк без данных (не путать с маленьким status-dot). */
+  .status-dot.unknown{ width:15px; height:15px; background:#ff4444; color:#fff; font-family:Georgia, serif;
+    font-size:10px; font-weight:700; line-height:15px; text-align:center; box-shadow:0 0 7px rgba(255,68,68,.7); }
 </style>
 </head>
 <body>
@@ -234,6 +320,44 @@
     </div>
   </div>
   <a id="tiktokLink" class="tiktok-link" href="https://www.tiktok.com/@best.show.official" target="_blank" rel="noopener noreferrer" aria-label="BestOfficial в TikTok">TikTok</a>
+  <!-- 08.08.2026, Создатель: «прям под тор 2 кликабельные надписи — релиз 4, версия 1» — статус
+       всего проекта целиком, не одного слова в цепочке, поэтому видно с самого начала. Релиз видят
+       все — версия только локально (см. JS ниже), и версия растёт на каждое изменение файлов. -->
+  <span id="releaseLabel" class="release-label" role="button" tabindex="0">Релиз 4</span>
+  <span id="versionLabel" class="release-label" role="button" tabindex="0">Версия 16</span>
+  <!-- 08.08.2026, Создатель: «нажимаю на релиз — сразу 2 карточки: слева презентация (аккуратно,
+       что уже точно сделано), справа рабочий список (сюда буду добавлять/менять)». -->
+  <div id="releaseCard" class="card" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="card-backdrop"></div>
+    <div class="card-body" id="releaseCardBodyWrap">
+      <button class="card-close" type="button" aria-label="Закрыть">×</button>
+      <div class="panel presentation-panel">
+        <h2 class="panel-title">🎬 Презентация</h2>
+        <div id="presentationBody"></div>
+      </div>
+      <div class="panel working-panel">
+        <h2 id="releaseCardTitle" class="panel-title"></h2>
+        <div id="releaseCardBody"></div>
+      </div>
+    </div>
+  </div>
+  <!-- 08.08.2026, Создатель: «версия — своя карточка, которую хочу видеть только я, слева что уже
+       сделано и точно работает, справа что в процессе» — та же пара Презентация/Процесс, но про
+       сам локальный порт (техническая сторона), не про сообщество Best — и видна только локально. -->
+  <div id="versionCard" class="card" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="card-backdrop"></div>
+    <div class="card-body" id="versionCardBodyWrap">
+      <button class="card-close" type="button" aria-label="Закрыть">×</button>
+      <div class="panel presentation-panel">
+        <h2 class="panel-title">🎬 Презентация</h2>
+        <div id="versionPresentationBody"></div>
+      </div>
+      <div class="panel working-panel">
+        <h2 id="versionCardTitle" class="panel-title"></h2>
+        <div id="versionCardBody"></div>
+      </div>
+    </div>
+  </div>
   <div id="navLeft" class="nav-btn nav-btn-left" role="button" tabindex="0" aria-label="Звёзды — участники Best">
     <canvas class="nav-canvas" aria-hidden="true"></canvas>
     <span class="nav-label" aria-hidden="true">Звёзды</span>
@@ -248,14 +372,30 @@
     <canvas class="nav-canvas" aria-hidden="true"></canvas>
     <span class="nav-label" aria-hidden="true">Lunora</span>
   </div>
+  <!-- 08.08.2026, Создатель: «везде где я открою карточку — про этот проект или звезду хочу видеть
+       слева то, как это должно быть (эталон, что уже сделано и что вау), справа то, что происходит,
+       чтобы презентация выглядела насыщеннее». Та же логика «Презентация | Процесс», что у Релиза,
+       но теперь на любой карточке проекта/звезды. -->
   <div id="card" class="card" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="card-backdrop"></div>
     <div class="card-body">
       <button class="card-close" type="button" aria-label="Закрыть">×</button>
-      <img id="cardPhoto" class="card-photo" alt="" style="display:none">
+      <div id="cardPhotoWrap" class="card-photo-wrap" style="display:none">
+        <canvas id="cardMiniTorus" class="card-mini-torus" aria-hidden="true"></canvas>
+        <img id="cardPhoto" class="card-photo" alt="">
+      </div>
       <h2 id="cardName" class="card-name"></h2>
       <div id="cardRoles" class="card-roles"></div>
-      <div id="cardFacts" class="card-facts"></div>
+      <div class="card-panels">
+        <div class="panel presentation-panel">
+          <h3 class="panel-title">🎬 Презентация</h3>
+          <div id="cardFacts" class="card-facts"></div>
+        </div>
+        <div class="panel working-panel">
+          <h3 class="panel-title">⚙️ Процесс</h3>
+          <div id="cardStats" class="card-stats"></div>
+        </div>
+      </div>
     </div>
   </div>
 
