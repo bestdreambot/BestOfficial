@@ -250,8 +250,14 @@
     opacity:0; pointer-events:none; transition:opacity .3s ease; }
   .card.open{ opacity:1; pointer-events:auto; }
   .card-backdrop{ position:absolute; inset:0; background:rgba(2,3,7,.82); backdrop-filter:blur(3px); }
+  /* 08.08.2026, Создатель (срочно): «в Telegram не видно всю карточку — видно только конец
+     презентации, процесс вообще не виден». Причина: .card-body росла по контенту без ограничения
+     высоты и без скролла — в Telegram WebView видимая область короче, и всё, что не влезло, было
+     просто недостижимо. Теперь карточка ограничена высотой экрана и скроллится внутри себя. */
   .card-body{
     position:relative; z-index:1; max-width:min(88vw, 420px); width:100%;
+    max-height:calc(100vh - 40px); max-height:calc(100dvh - 40px);
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
     background:linear-gradient(165deg, rgba(20,16,8,.92), rgba(10,8,4,.96));
     border:1px solid rgba(255,214,140,.22); border-radius:18px; padding:28px 24px;
     box-shadow:0 20px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(255,214,140,.06) inset;
