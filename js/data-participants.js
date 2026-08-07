@@ -31,13 +31,20 @@ var PARTICIPANT_FX_ORDER = ['gold_enter','soft_only','flash_warm','no_fx','strea
 // 06.08.2026, Создатель: «поставь Алину после Гали» — порядок цепочки на порту 2000 намеренно
 // отличается от live-прода (там Алина 4-я), только здесь, локально, git/Vercel не тронуты.
 var PARTICIPANT_CHAIN = [
-  { word:'Галя',     aria:'Галя. Руководитель проекта Best.', world:'p_galya',    handle:'not_yours21.02',        photo:'galia', leader:true, badge:'Руководитель Best', leads:['Jelly'] },
-  { word:'Алина',    aria:'Алина. Участник BEST.',    world:'p_alina',    handle:'im_your_asya',         photo:'alina', leads:['Aleorix','Anibrox'] },
+  // 07.08.2026, Создатель уточнил: не замена, а все три сразу — «руководитель бест / руководитель
+  // news / руководитель jelly». badge даёт первую пилюлю (Best), leads — остальные по порядку.
+  { word:'Галя',     aria:'Галя. Руководитель проекта Best.', world:'p_galya',    handle:'not_yours21.02',        photo:'galia', leader:true, badge:'Руководитель Best', leads:['News','Jelly'] },
+  // 06.08.2026 — реальный факт из переписки «Руководство проекта Best» (05-06.08.2026): Галя
+  // спросила себе заместителя, Маша отказалась, Алина согласилась «ради Гали». Андрей подтвердил.
+  { word:'Алина',    aria:'Алина. Заместитель руководителя Best.', world:'p_alina',    handle:'im_your_asya', photo:'alina', badge:'Заместитель руководителя Best', leads:['Aleorix','Anibrox'] },
   { word:'Мария',    aria:'Мария. Участник BEST.',    world:'p_maria',    handle:'angelidemon22.07.88m',  photo:'masha', leads:['Dualis','Lunora','Finger Dance'] },
   { word:'Вива',     aria:'Вива. Участник BEST.',     world:'p_viva',     handle:'vikaviva5',             photo:'viva', leads:['Animix','Dualis'] },
   { word:'Дима',     aria:'Дима. Участник BEST.',     world:'p_dima',     handle:'momentonoriarti',       photo:'dima' },
   { word:'Маша',     aria:'Маша. Участник BEST.',     world:'p_masha',    handle:'mayshonok1994',        photo:'maria', leads:['Fovela'] },
   { word:'Виктория', aria:'Виктория. Участник BEST.', world:'p_viktoria', handle:'tori_fomi2383',        photo:'torri', leads:['hit.parad official'] },
+  // 07.08.2026, Создатель: «Олеся вернулась на проект... добавь после Вика Торри». TikTok-адрес
+  // подтверждён следующим сообщением: @schastie_moe_.
+  { word:'Олеся',    aria:'Олеся. Участник BEST.',    world:'p_olesya',   handle:'schastie_moe_',         photo:'olesya', leads:['Valmont','Rock Party'] },
   { word:'Валя',     aria:'Валя. Участник BEST.',     world:'p_valya',    handle:'izbalovannoe..chudo',   photo:'valya' },
   { word:'Ира',      aria:'Ира. Участник BEST.',      world:'p_ira',      handle:'26koroleva_ada',       photo:'ira', leads:['Moon'] },
   { word:'Виталий',  aria:'Виталий. Участник BEST.',  world:'p_vitali',   handle:'mostwanted_86',        photo:'vitali' },
@@ -56,6 +63,7 @@ PARTICIPANT_CHAIN.forEach(function(p, i){
 // HTML»: 93% веса freexofficial.html было именно этими 15 фото). С релиза 1.4 (31.07.2026) — публичны
 // и на bestofficial.vercel.app: все фото официальные, с TikTok, прятать нечего (прямое слово Создателя).
 var PARTICIPANT_PHOTOS = {
+  olesya:'photos/olesya.jpg',
   marina:'photos/marina.jpg',
   sasha:'photos/sasha.jpg',
   ira:'photos/ira.jpg',

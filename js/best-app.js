@@ -50,6 +50,21 @@
     if(whiteBoost > 0){ r += (255-r)*whiteBoost; g += (255-g)*whiteBoost; bl += (255-bl)*whiteBoost; }
     return [Math.round(r), Math.round(g), Math.round(bl)];
   }
+  // 06.08.2026, Создатель: «потуши чуть все остальные торы... только Best и Aleorix яркие, все
+  // остальные тусклые» — реальный факт из переписки «Руководство проекта Best»: сейчас представлены
+  // только эти два, остальные ждут своей очереди (проект PROJECTS[i].bright, см. data-projects.js).
+  // Тушим не через прозрачность (стало бы просто бледнее), а тянем каждый стоп к серому — теряет
+  // насыщенность и яркость, остаётся угадываемым, но явно «не в фокусе».
+  function dimPalette(pal){
+    return pal.map(function(c){
+      var gray = (c[0]+c[1]+c[2])/3;
+      return [
+        Math.round(c[0]*0.42 + gray*0.16),
+        Math.round(c[1]*0.42 + gray*0.16),
+        Math.round(c[2]*0.42 + gray*0.16)
+      ];
+    });
+  }
   // «Нити» и «искры» раньше были отдельными, вручную подобранными по 5-6 цветов на серебро/золото
   // (нечего было бы подбирать для ~40 миров вручную) — теперь берутся прямо из текущей палитры:
   // нити — несколько равномерно расставленных стопов, искры — самые светлые.
@@ -80,8 +95,15 @@
   var LOAD_T = null, lastT = 0;
 
   var IGNITE_STAGGER = 1900, IGNITE_RAMP = 750;
-  var transFrom = WORLDS.best, transTo = WORLDS.best, transStart = -1e9, transDurationMs = 1400;
-  var curPalette = WORLDS.best;
+  // Баг 06.08.2026 (Создатель: «нажимаю Best 1 раз, ничего не происходит, нажимаю второй — Aleorix,
+  // а должен быть крутой эффект») — тор стартовал уже золотым (WORLDS.best), так что первый клик
+  // (переход BestOfficial → Best) transFrom===transTo, менять нечего, портал-переход шёл вхолостую.
+  // Сверился с историей origin (git show 3374029:js/torus.js): там по умолчанию серебро (WORLDS.
+  // freex, Release 1.1: «мир по умолчанию стал серебряным... клик по слову превращает его в Best и
+  // только тогда тор становится золотым»). Возвращаем этот же принцип — первый клик теперь реально
+  // красит тор в золото, с портал-эффектом, как задумано.
+  var transFrom = WORLDS.freex, transTo = WORLDS.freex, transStart = -1e9, transDurationMs = 1400;
+  var curPalette = WORLDS.freex;
   var lastToggleT = null;
   // 05.08.2026, «смотри внимательно на github.com/bestdreambot/BestOfficial, логику ты уже близко» —
   // сверился с настоящим app.js/torus.js оттуда: у каждого шага цепочки свой почерк ПЕРЕХОДА ТОРА
@@ -356,6 +378,9 @@
   }
   var navLeft = document.getElementById('navLeft'), navRight = document.getElementById('navRight');
   var navLeftCanvas = navLeft.querySelector('.nav-canvas'), navRightCanvas = navRight.querySelector('.nav-canvas');
+  // Lunora (06.08.2026, Создатель: «лунору новый круг сверху слева, сделай мк тор») — третий mktor,
+  // не часть линейной цепочки слева/справа, прямой вход в Lunora из любого места.
+  var navLunora = document.getElementById('navLunora'), navLunoraCanvas = navLunora.querySelector('.nav-canvas');
   var stageEl = document.getElementById('stage'), holePhotoEl = document.getElementById('holePhoto');
   var cardEl = document.getElementById('card');
   var cardNameEl = document.getElementById('cardName'), cardRolesEl = document.getElementById('cardRoles'), cardFactsEl = document.getElementById('cardFacts');
@@ -376,8 +401,12 @@
   // draw-loop выше не трогает и не вызывает её саму — рисуется отдельно, ниже, в общем rAF. LEFT
   // красится в mktorLeftPal (текущий мир/звезда, обновляется в activateProject/enterParticipant/
   // toggleParticipantsMode/goHome), RIGHT — всегда WORLDS.best. ----------
-  var mktorLeftPal = WORLDS.best;
+  // По умолчанию тоже серебро (freex), не золото — та же правка, что у главного тора выше; LEFT
+  // сам не виден до первого клика (см. .nav-btn.show), но значение должно быть честным на всякий.
+  var mktorLeftPal = WORLDS.freex;
   function setMktorLeft(pal){ mktorLeftPal = pal; drawMktor(navLeftCanvas, pal, 0); }
+  var mktorLunoraPal = WORLDS.lunora;
+  function setMktorLunora(pal){ mktorLunoraPal = pal; drawMktor(navLunoraCanvas, pal, 0); }
   // 05.08.2026 — Создатель: «мини космический тор статический у тебя состоит из 2 слоёв, внутренний
   // и наружный, сделай mktor статичным и оставь только наружный слой». Убрал внутренний facet-слой
   // (было mLayers=2, теперь один — только внешняя полоса), и mktor больше не рисуется каждый кадр
@@ -442,17 +471,57 @@
 
   var wordState = 0; // индекс следующего непоказанного проекта (0 = ещё на первом экране/Best)
   var participantsMode = false, participantIdx = 0;
+  var lunoraMode = false, lunoraIdx = 0;
+
+  // Lunora-режим (06.08.2026, Создатель: «я хочу нажать на лунора в ктор и получить ноира и
+  // заруум») — тот же приём, что у звёзд: клик по mktor входит в маленькую цепочку, клик по
+  // главному слову листает её (Lunora → Noira → Zaryum → снова Lunora), каждый шаг — полноценный
+  // цвет и слово ГЛАВНОГО Ктора, не мелкий текст сбоку (это уже пробовали, Создатель отклонил).
+  function showLunoraStep(idx){
+    lunoraIdx = idx;
+    var step = LUNORA_CHAIN[idx];
+    setWord(step.word, step.aria);
+    var pal = dimPalette(WORLDS[step.world]); // Lunora/Noira/Zaryum пока не bright — см. dimPalette выше
+    enterWorld(pal, step.ringMs, step.ring);
+    setTiktok(step.link || null);
+    setMktorLunora(pal);
+    // 06.08.2026, Создатель: «звёзды только на бест» — LEFT показывает «Звёзды» и ведёт в звёзд
+    // ТОЛЬКО когда мы на самом Best, как у любого обычного проекта. Внутри Lunora-цепочки LEFT
+    // ведёт себя как у Voice/Jelly/любого другого проекта — показывает карточку ТЕКУЩЕГО шага
+    // (Lunora/Noira/Zaryum), см. handleNavLeft ниже.
+    navLeft.querySelector('.nav-label').textContent = step.word;
+    navLeft.setAttribute('aria-label', 'Карточка ' + step.word);
+    // Баг 06.08.2026 (Создатель: «ноира тор синий, мктор золотой, а должен быть тоже синий») —
+    // подпись на LEFT обновлялась, а сам цвет канваса — нет (оставался от прошлого проекта/звезды).
+    // Как и у обычных проектов — mktor LEFT красится в цвет ТЕКУЩЕГО состояния.
+    setMktorLeft(pal);
+  }
+  function enterLunora(){
+    closeCard();
+    if(participantsMode){ participantsMode = false; navLeft.classList.remove('active'); }
+    lunoraMode = true;
+    navLunora.classList.add('active');
+    showLunoraStep(0);
+  }
 
   function activateProject(i){
     var proj = PROJECTS[i];
     wordState = i + 1;
+    // 06.08.2026: Lunora больше не бывает в PROJECTS вообще (убрана из цепочки Best), так что
+    // proj.word==='Lunora' здесь больше не встречается — но lunoraMode на всякий случай гасим
+    // всегда, если вдруг сюда попали не через enterLunora() (например, клик по обычному слову).
+    lunoraMode = false; navLunora.classList.remove('active');
     setWord(proj.word, proj.aria);
-    enterWorld(WORLDS[proj.world], proj.ringMs, proj.ring);
+    // 06.08.2026: только проекты с bright:true (сейчас — Best и Aleorix, реальный факт из
+    // переписки) идут полной палитрой, остальные — через dimPalette() (см. выше). Не трогает
+    // сами данные WORLDS — только то, что реально уходит на экран для этого конкретного проекта.
+    var pal = proj.bright ? WORLDS[proj.world] : dimPalette(WORLDS[proj.world]);
+    enterWorld(pal, proj.ringMs, proj.ring);
     var linkInfo = proj.link ? proj.link : proj.tiktok ? { url:'https://www.tiktok.com/@'+proj.tiktok, label:'TikTok', aria:proj.word+' в TikTok — @'+proj.tiktok } : null;
     setTiktok(linkInfo);
     navLeft.querySelector('.nav-label').textContent = proj.word === 'Best' ? 'Звёзды' : proj.word;
     navLeft.setAttribute('aria-label', proj.word === 'Best' ? 'Звёзды — участники Best' : 'Карточка проекта ' + proj.word);
-    setMktorLeft(WORLDS[proj.world]);
+    setMktorLeft(pal);
     hideHolePhoto();
     // 06.08.2026, Создатель: «не хочу видеть mktor на главной странице BestOfficial». Сверился с
     // живым app.js: там кнопки FOM2 не появляются по таймеру от загрузки страницы вообще — они
@@ -460,7 +529,14 @@
     // onWordActivate). Первый экран (до первого клика) — только Ктор + слово, без mktor, как и
     // просит Создатель. RIGHT показывается сразу, LEFT — с той же задержкой 500мс, что в оригинале.
     navRight.classList.add('show');
-    setTimeout(function(){ navLeft.classList.add('show'); }, reduced ? 0 : 500);
+    // 06.08.2026, Создатель: «когда я нахожусь в Anibrox и других проектов я не вижу Lunora, вход
+    // в Lunora только с Best тора» — mktor Lunora виден только на самом Best, на любом другом
+    // проекте (Anibrox, Jelly, ...) прячется. Пока внутри Lunora-режима (клик уже случился, кнопка
+    // была видна на Best) — эта ветка вообще не выполняется, showLunoraStep() её не трогает.
+    setTimeout(function(){
+      navLeft.classList.add('show');
+      if(proj.word === 'Best'){ navLunora.classList.add('show'); } else { navLunora.classList.remove('show'); }
+    }, reduced ? 0 : 500);
   }
   function enterParticipant(idx){
     var p = PARTICIPANT_CHAIN[idx];
@@ -471,7 +547,10 @@
     wordEl.setAttribute('aria-label', p.aria);
     enterWorld(WORLDS[p.world], p.ringMs, p.ring);
     showHolePhoto(p);
-    setTiktok({ url:'https://www.tiktok.com/@'+p.handle, label:'TikTok', aria:p.word+' в TikTok — @'+p.handle });
+    // 07.08.2026: адрес не у всех подтверждён (Олеся — «если не уверен, не пишите», как и у
+    // проектов) — раньше тут строился TikTok-URL из p.handle без проверки, при null получилось бы
+    // "@null" рабочей на вид ссылкой. Теперь ссылка не показывается вовсе, если handle пуст.
+    setTiktok(p.handle ? { url:'https://www.tiktok.com/@'+p.handle, label:'TikTok', aria:p.word+' в TikTok — @'+p.handle } : null);
     navLeft.querySelector('.nav-label').textContent = p.word;
     navLeft.setAttribute('aria-label', 'Карточка ' + p.word);
     setMktorLeft(WORLDS[p.world]);
@@ -481,37 +560,42 @@
     participantsMode = !participantsMode;
     navLeft.classList.toggle('active', participantsMode);
     if(participantsMode){
+      // 06.08.2026, Создатель: «у звёзд нет Луноры, когда мы смотрим звёзд Луноры нет. Лунора
+      // только в Best торе» — прячем mktor Lunora на время звёзд (снова появится через
+      // activateProject(0) в ветке else ниже, когда выходим обратно на Best/проекты).
+      navLunora.classList.remove('show');
       participantIdx = 0;
       enterParticipant(0);
     } else {
-      wordState = 0;
-      var best = PROJECTS[0];
-      setWord(best.word, best.aria);
-      enterWorld(WORLDS[best.world], best.ringMs, best.ring);
-      setTiktok(best.tiktok ? { url:'https://www.tiktok.com/@'+best.tiktok, label:'TikTok', aria:best.word+' в TikTok — @'+best.tiktok } : null);
-      navLeft.querySelector('.nav-label').textContent = 'Звёзды';
-      navLeft.setAttribute('aria-label', 'Звёзды — участники Best');
-      setMktorLeft(WORLDS.best);
-      hideHolePhoto();
+      // Баг 06.08.2026 (Создатель: «нажимаю бест, нажимаю бест — нужно два раза, хочу один») —
+      // тут стояло `wordState = 0`, а 0 означает «ещё вообще ничего не листали» (следующий клик по
+      // слову снова покажет Best — тот же Best, значит без видимого эффекта, вхолостую). Правильно
+      // (сверился с origin app.js: goHome там зовёт activateProject(0), которая ставит wordState=1,
+      // никогда не 0 после первого запуска) — раз мы уже показываем Best, значит его слот уже
+      // «пройден», следующий клик должен сразу вести к Aleorix. activateProject(0) делает это же
+      // + ставит wordState=1 сама, заодно не дублирует остальную логику ниже.
+      activateProject(0);
     }
   }
   function goHome(){
     closeCard();
     if(participantsMode){ toggleParticipantsMode(); return; }
+    var wasLunora = lunoraMode;
+    if(lunoraMode){ lunoraMode = false; navLunora.classList.remove('active'); }
     tgHaptic();
-    if(wordState !== 0){
-      wordState = 0; participantsMode = false;
-      var best = PROJECTS[0];
-      setWord(best.word, best.aria);
-      enterWorld(WORLDS[best.world], best.ringMs, best.ring);
-      setTiktok(best.tiktok ? { url:'https://www.tiktok.com/@'+best.tiktok, label:'TikTok', aria:best.word+' в TikTok — @'+best.tiktok } : null);
-      navLeft.querySelector('.nav-label').textContent = 'Звёзды';
-      setMktorLeft(WORLDS.best);
-      hideHolePhoto();
+    if(wordState !== 1 || wasLunora){
+      participantsMode = false;
+      activateProject(0);
     }
   }
   function onWordActivate(){
     tgHaptic();
+    // Lunora (06.08.2026): клик по главному слову листает Lunora → Noira → Zaryum → снова Lunora,
+    // не задевая обычную цепочку проектов/звёзд.
+    if(lunoraMode){
+      showLunoraStep((lunoraIdx + 1) % LUNORA_CHAIN.length);
+      return;
+    }
     if(participantsMode){
       participantIdx = (participantIdx + 1) % PARTICIPANT_CHAIN.length;
       enterParticipant(participantIdx);
@@ -528,7 +612,15 @@
   holePhotoEl.addEventListener('click', onWordActivate);
 
   function renderPills(el, labels){ el.innerHTML = labels.map(function(r){ return '<span class="card-pill">'+r+'</span>'; }).join(''); }
-  var PROJECT_PENDING_LEADS = { 'Valmont': 'Олеся (готовится)' };
+  // 07.08.2026: Олеся больше не «готовится» — она реальная звезда в PARTICIPANT_CHAIN с
+  // leads:['Valmont'], карточка Valmont теперь находит её сама через обычный leaders-поиск ниже.
+  var PROJECT_PENDING_LEADS = {};
+  // 06.08.2026, Создатель: «запиши это всё в карточку Anibrox... почту не показывать, системный
+  // аккаунт не показывать, что обсуждал — не показывать, пиши факты, презентацию проекта». Только
+  // то, что можно показать всем — реальная история имени и кто ведёт, ничего внутреннего/приватного.
+  var PROJECT_FACTS = {
+    'Anibrox': ['Раньше назывался Friend — теперь Anibrox', 'Второй проект под руководством Алины, вместе с Aleorix']
+  };
   function openCard(){ cardEl.classList.add('open'); cardEl.setAttribute('aria-hidden','false'); }
   function closeCard(){ cardEl.classList.remove('open'); cardEl.setAttribute('aria-hidden','true'); }
   function openStarCard(p){
@@ -549,7 +641,8 @@
     var leaders = proj.word === 'Best' ? ['Галя'] : PARTICIPANT_CHAIN.filter(function(p){ return p.leads && p.leads.indexOf(proj.word)!==-1; }).map(function(p){ return p.word; });
     if(!leaders.length && PROJECT_PENDING_LEADS[proj.word]){ leaders = [PROJECT_PENDING_LEADS[proj.word]]; }
     renderPills(cardRolesEl, leaders.length ? ['Руководит: '+leaders.join(', ')] : []);
-    cardFactsEl.innerHTML = '';
+    var facts = PROJECT_FACTS[proj.word] || [];
+    cardFactsEl.innerHTML = facts.map(function(f){ return '<p class="card-fact">✨ '+f+'</p>'; }).join('');
     openCard();
   }
   // LEFT = «Звёзды» / контекст. Эталон app.js handleFom2Activate (репо BestOfficial):
@@ -561,6 +654,13 @@
   // Создатель: «нажимаю на звёзды и вижу карточку Best, хочу первую звезду — руководителя Галю».
   function handleNavLeft(){
     tgHaptic();
+    // Lunora (06.08.2026, Создатель: «звёзды только на бест») — LEFT внутри Lunora ведёт себя как
+    // у любого обычного проекта: показывает карточку ТЕКУЩЕГО шага (Lunora/Noira/Zaryum), не звёзд.
+    // Режим Lunora не сбрасывается — карточка открывается поверх, как у Voice/Jelly/любого проекта.
+    if(lunoraMode){
+      openProjectCard(LUNORA_CHAIN[lunoraIdx]);
+      return;
+    }
     if(participantsMode){
       openStarCard(PARTICIPANT_CHAIN[participantIdx]);
     } else if(wordState >= 2 && wordState <= PROJECTS.length){
@@ -570,10 +670,10 @@
       toggleParticipantsMode();
     }
   }
-  // RIGHT = Best-маяк. Карточка Best только когда УЖЕ на главной Best (wordState===1),
-  // как handleBestFom2 в app.js; wordState===0 тоже «дома» (слово BestOfficial с первого кадра).
+  // RIGHT = Best-маяк. Карточка Best только когда УЖЕ на главной Best (wordState===1) и НЕ в
+  // Lunora-режиме, как handleBestFom2 в app.js; wordState===0 тоже «дома» (слово с первого кадра).
   function handleNavRight(){
-    if(!participantsMode && (wordState === 0 || wordState === 1)){
+    if(!participantsMode && !lunoraMode && (wordState === 0 || wordState === 1)){
       tgHaptic();
       openProjectCard(PROJECTS[0]);
     } else {
@@ -584,6 +684,11 @@
   navLeft.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handleNavLeft(); } });
   navRight.addEventListener('click', handleNavRight);
   navRight.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handleNavRight(); } });
+  // Lunora mktor (06.08.2026) — прямой вход в Lunora из любого места (enterLunora() определена
+  // выше, рядом с activateProject/showLunoraStep).
+  function handleNavLunora(){ tgHaptic(); enterLunora(); }
+  navLunora.addEventListener('click', handleNavLunora);
+  navLunora.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handleNavLunora(); } });
   cardEl.querySelector('.card-backdrop').addEventListener('click', closeCard);
   cardEl.querySelector('.card-close').addEventListener('click', closeCard);
   document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeCard(); } });
@@ -598,6 +703,9 @@
   // enterParticipant/toggleParticipantsMode/goHome ниже), не в rAF-цикле главного тора.
   drawMktor(navLeftCanvas, mktorLeftPal, 0);
   drawMktor(navRightCanvas, WORLDS.best, 0);
+  // Lunora mktor — статичный, тот же тусклый тон, что у самого проекта Lunora (она тоже без
+  // bright:true, ждёт своей очереди, как и остальные — только вход в неё особый, напрямую).
+  drawMktor(navLunoraCanvas, dimPalette(WORLDS.lunora), 0);
 
   // ---------- Запуск: главный тор в своём rAF-цикле (mktor в него не входит — статичный). Здесь, в
   // самом конце файла, потому что draw()/navLeftCanvas и т.д. объявлены выше в этом же файле. Сам

@@ -37,13 +37,21 @@ var WORLDS = {
   dualis:         shades(130,60,220),
   exclusive_stars:shades(190,220,90),
   finger_dance:   shades(255,120,140),
+  // Dances — электрический лаймовый, энергия движения, отдельный от Finger Dance (розовый).
+  dances:         shades(140,255,60),
   fovela:         shades(70,60,60),
   grand_show:     shades(128,0,0),
   isr:            shades(70,140,220),
+  // Rock Party — тёмный кроваво-красный, эдж рок-стиля, не путать с maroon (grand_show).
+  rock_party:     shades(90,20,30),
   moon:           shades(200,215,235),
   nerix:          shades(255,140,40),
   news:           shades(0,127,255),
   noira:          shades(40,80,200),
+  // Lunora — объединяющий вход для Noira+Zaryum (06.08.2026). Сначала был лунный сине-розовый
+  // блend, Создатель попросил перекрасить в бордовый — глубокий винный, не путать с maroon
+  // grand_show (тот суше/коричневее) и не с ярким valmont.
+  lunora:         shades(120,20,45),
   past_legends:   shades(180,140,70),
   tiretok:        shades(170,175,185),
   tune:           shades(30,200,190),
@@ -64,6 +72,8 @@ var WORLDS = {
   p_ira:      shades(110,140,255),
   p_masha:    shades(255,230,90),
   p_viktoria: shades(70,210,210),
+  // Олеся — тёплый розово-коралловый, перекликается с красным Valmont, но не дублирует его.
+  p_olesya:   shades(235,80,110),
   p_alina:    shades(255,90,160),
   p_viva:     shades(210,90,220),
   p_vitali:   shades(200,120,70)

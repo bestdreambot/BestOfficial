@@ -132,6 +132,12 @@
   .nav-btn.show{ opacity:1; transform:none; pointer-events:auto; }
   .nav-btn-left{ left:max(14px, env(safe-area-inset-left)); }
   .nav-btn-right{ right:max(14px, env(safe-area-inset-right)); }
+  /* Lunora (06.08.2026) — сверху слева, не снизу: третий mktor, вне линейной LEFT/RIGHT логики. */
+  .nav-btn-top-left{
+    bottom:auto; top:max(18px, env(safe-area-inset-top));
+    left:max(14px, env(safe-area-inset-left));
+    width:min(13vmin, 84px);
+  }
   .nav-canvas{
     position:absolute; inset:0; width:100%; height:100%; border-radius:50%;
     filter:drop-shadow(0 0 10px rgba(255,214,140,.22));
@@ -235,6 +241,12 @@
   <div id="navRight" class="nav-btn nav-btn-right" role="button" tabindex="0" aria-label="Best — на главную">
     <canvas class="nav-canvas" aria-hidden="true"></canvas>
     <span class="nav-label" aria-hidden="true">Best</span>
+  </div>
+  <!-- 06.08.2026, Создатель: «лунору новый круг сверху слева, сделай мк тор» — третий mktor, прямой
+       вход в Lunora из любого места (не часть линейной цепочки LEFT/RIGHT). -->
+  <div id="navLunora" class="nav-btn nav-btn-top-left" role="button" tabindex="0" aria-label="Lunora">
+    <canvas class="nav-canvas" aria-hidden="true"></canvas>
+    <span class="nav-label" aria-hidden="true">Lunora</span>
   </div>
   <div id="card" class="card" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="card-backdrop"></div>

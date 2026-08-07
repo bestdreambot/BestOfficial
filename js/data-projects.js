@@ -3,36 +3,62 @@
 // слово, world (см. WORLDS/shades в data-worlds.js), tiktok-адрес (null — если Создатель не был уверен в
 // адресе, по его прямому слову «если не уверен, не пишите», ссылка тогда просто не показывается),
 // ringMode/ringMs/wordFx подобраны по кругу так, чтобы соседние шаги не повторяли друг друга.
+// 06.08.2026, Создатель по факту переписки «Руководство проекта Best»: сейчас реально представлены
+// (кем-то лично, на бесте) только два проекта — сам Best (Галя) и Aleorix (Алина, «мне надо
+// представить алеорикс на бесте»). Остальные ещё не представлены — «потуши чуть все остальные
+// торы... только Best яркий и Aleorix яркий, все остальные тусклые». bright:true — единственный
+// маркер, который это включает (см. dimPalette() в best-app.js) — не удалять у остальных проектов
+// молча, если кто-то представит свой проект, добавить ему bright:true явно, по прямому слову.
 var PROJECTS = [
-  { word:'Best',            aria:'Best. Проект.',            world:'best',            tiktok:'best.show.official', ring:'portal',   ringMs:1000, fx:'gold_enter'  },
-  { word:'Aleorix',         aria:'Aleorix. Проект.',         world:'aleorix',         tiktok:'aleorix0',           ring:'dissolve', ringMs:1300, fx:'soft_only'   },
-  { word:'Jelly',           aria:'Jelly. Проект.',           world:'jelly',           tiktok:'jelly.show',         ring:'wipe',     ringMs:1100, fx:'flash_warm'  },
+  { word:'Best',            aria:'Best. Проект.',            world:'best',            tiktok:'best.show.official', ring:'portal',   ringMs:1000, fx:'gold_enter',  bright:true },
+  { word:'Aleorix',         aria:'Aleorix. Проект.',         world:'aleorix',         tiktok:'aleorix0',           ring:'dissolve', ringMs:1300, fx:'soft_only',   bright:true },
+  { word:'Anibrox',         aria:'Anibrox. Проект.',         world:'anibrox',         tiktok:'best.anibrox',       ring:'portal',   ringMs:1000, fx:'soft_only'   },
   { word:'Valmont',         aria:'Valmont. Проект.',         world:'valmont',         tiktok:'best.valmont.man',   ring:'burst',    ringMs:900,  fx:'no_fx'       },
+  { word:'Jelly',           aria:'Jelly. Проект.',           world:'jelly',           tiktok:'jelly.show',         ring:'wipe',     ringMs:1100, fx:'flash_warm'  },
+  { word:'Dualis',          aria:'Dualis. Проект.',          world:'dualis',          tiktok:'best.duet.show',     ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
   { word:'Animix',          aria:'Animix. Проект.',          world:'animix',          tiktok:'best.anime.show',    ring:'spiral',   ringMs:1200, fx:'streak_only' },
-  { word:'Anibrox',         aria:'Anibrox. Проект.',         world:'anibrox',         tiktok:'best.anibrox.show',  ring:'portal',   ringMs:1000, fx:'soft_only'   },
+  { word:'Fovela',          aria:'Fovela. Проект.',          world:'fovela',          tiktok:'best_fovela',        ring:'spiral',   ringMs:1200, fx:'gold_enter'  },
+  { word:'Grand Show',      aria:'Grand Show. Проект.',      world:'grand_show',      tiktok:'best.grand.show',    ring:'portal',   ringMs:1000, fx:'soft_only'   },
+  { word:'Exclusive Stars', aria:'Exclusive Stars. Проект.', world:'exclusive_stars', tiktok:'best.exclusive.stars', ring:'wipe',   ringMs:1100, fx:'no_fx'       },
+  { word:'Moon',            aria:'Moon. Проект.',            world:'moon',            tiktok:'best.moon.show',     ring:'wipe',     ringMs:1100, fx:'no_fx'       },
+  // 07.08.2026, Создатель: «рок парти после моон» — переставлен с самого конца цепочки.
+  { word:'Rock Party',      aria:'Rock Party. Проект.',      world:'rock_party',      tiktok:'best.rock.party',    ring:'burst',    ringMs:900,  fx:'no_fx'       },
+  { word:'Nerix',           aria:'Nerix. Проект.',           world:'nerix',           tiktok:'best.comedy.show',   ring:'burst',    ringMs:900,  fx:'streak_only' },
+  { word:'News',            aria:'News. Проект.',            world:'news',            tiktok:'best.news.show',     ring:'spiral',   ringMs:1200, fx:'gold_enter'  },
+  // 07.08.2026, Создатель: «есть ещё проект dances @best.dances.show была руководительница Нюта
+  // она почему-то ушла примерно год назад, но тор проекта сделай, поставь его после новости ньюз».
+  // TikTok-адрес подтверждён (совпадает с TIKTOK_ROSTER_2026-07-22.md). Нюта не добавлена в
+  // PARTICIPANT_CHAIN — она больше не на проекте, добавлять ушедшего человека как активную звезду
+  // не стал; если Создатель захочет её как историческую запись — отдельным явным словом.
+  { word:'Dances',          aria:'Dances. Проект.',          world:'dances',          tiktok:'best.dances.show',   ring:'wipe',     ringMs:1100, fx:'no_fx'       },
   { word:'Coffee',          aria:'Coffee. Проект.',          world:'coffee',          tiktok:'best.cofee.show',    ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
   { word:'Detski',          aria:'Detski. Проект.',          world:'detski',          tiktok:'best.children.show', ring:'wipe',     ringMs:1100, fx:'no_fx'       },
   { word:'Dostar',          aria:'Dostar. Проект.',          world:'dostar',          tiktok:'best.dostar.show',  ring:'burst',    ringMs:900,  fx:'streak_only' },
-  { word:'Dream',           aria:'Dream. Проект.',           world:'dream',           tiktok:'best.dream.show',    ring:'portal',   ringMs:1000, fx:'soft_only'   },
-  { word:'Dualis',          aria:'Dualis. Проект.',          world:'dualis',          tiktok:'best.duet.show',     ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
-  { word:'Exclusive Stars', aria:'Exclusive Stars. Проект.', world:'exclusive_stars', tiktok:'best.exclusive.stars', ring:'wipe',   ringMs:1100, fx:'no_fx'       },
   { word:'Finger Dance',    aria:'Finger Dance. Проект.',    world:'finger_dance',    tiktok:'best.finger.dance',  ring:'burst',    ringMs:900,  fx:'streak_only' },
-  { word:'Fovela',          aria:'Fovela. Проект.',          world:'fovela',          tiktok:'best_fovela',        ring:'spiral',   ringMs:1200, fx:'gold_enter'  },
-  { word:'Grand Show',      aria:'Grand Show. Проект.',      world:'grand_show',      tiktok:'best.grand.show',    ring:'portal',   ringMs:1000, fx:'soft_only'   },
   { word:'ISR',             aria:'ISR. Проект.',             world:'isr',             tiktok:'best.isr.show',      ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
-  { word:'Moon',            aria:'Moon. Проект.',            world:'moon',            tiktok:'best.moon.show',     ring:'wipe',     ringMs:1100, fx:'no_fx'       },
-  { word:'Nerix',           aria:'Nerix. Проект.',           world:'nerix',           tiktok:'best.comedy.show',   ring:'burst',    ringMs:900,  fx:'streak_only' },
-  { word:'News',            aria:'News. Проект.',            world:'news',            tiktok:'best.news.show',     ring:'spiral',   ringMs:1200, fx:'gold_enter'  },
   { word:'Past Legends',    aria:'Past Legends. Проект.',    world:'past_legends',    tiktok:'best.past.legends',  ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
   { word:'Tiretok',         aria:'Tiretok. Проект.',         world:'tiretok',         tiktok:'best.tiretok',       ring:'wipe',     ringMs:1100, fx:'no_fx'       },
   { word:'Tune',            aria:'Tune. Проект.',            world:'tune',            tiktok:'best.tune.show',     ring:'burst',    ringMs:900,  fx:'streak_only' },
   { word:'Vanila',          aria:'Vanila. Проект.',          world:'vanila',          tiktok:'best.vanila.show',   ring:'spiral',   ringMs:1200, fx:'gold_enter'  },
   { word:'Voice',           aria:'Voice. Проект.',           world:'voice',           tiktok:'best.voice.show',    ring:'portal',   ringMs:1000, fx:'soft_only'   },
-  { word:'Noira',           aria:'Noira. Проект.',           world:'noira',           tiktok:null,                 ring:'wipe',     ringMs:1100, fx:'no_fx',
-    link:{ url:'https://youtube.com/playlist?list=PLuaNqEUb7SmXUdZlHeY4HgbE29TWwfTiW&si=1K-pyHfJoyT9eOG5', label:'Noira на YouTube', aria:'Noira на YouTube' } },
-  { word:'Zaryum',          aria:'Zaryum. Проект.',          world:'zaryum',          tiktok:null,                 ring:'dissolve', ringMs:1300, fx:'flash_warm',
-    link:{ url:'https://youtube.com/playlist?list=PLuaNqEUb7SmVnWfr6seNIC_8uMPZSc-Xd&si=-vuaO4UCriYOpILv', label:'Zaryum на YouTube', aria:'Zaryum на YouTube' } }
+  { word:'Dream',           aria:'Dream. Проект.',           world:'dream',           tiktok:'best.dream.show',    ring:'portal',   ringMs:1000, fx:'soft_only'   }
 ];
+// 06.08.2026, Создатель, финально: «убери из бест лунора заруум ноира» — Lunora/Noira/Zaryum
+// полностью убраны из линейной цепочки PROJECTS (не Best-проекты). Вход в них — только через свой
+// отдельный mktor сверху слева (см. LUNORA_CHAIN + enterLunora()/showLunoraStep() в best-app.js),
+// то же самое, что «Звёзды» — независимый режим, не шаг в цепочке кликов по слову.
 // По слову Создателя («нужно разные») — у каждого шага цепочки свой почерк перехода: и в торе
 // (ringMode), и в слове (wordFx) — см. таблицу PROJECTS выше. После последнего проекта клик по
 // слову больше ничего не делает (цепочка кончилась).
+
+// Lunora — отдельная маленькая цепочка (тот же приём, что PARTICIPANT_CHAIN у звёзд): клик по
+// слову внутри Lunora-режима листает Lunora → Noira → Zaryum → обратно на Lunora, каждый шаг —
+// свой цвет и своё слово на ГЛАВНОМ Кторе (не мелкий текст сбоку). Ссылки Noira/Zaryum — реальные,
+// из переписки «Руководство проекта Best» (Андрей сам скинул плейлист Zaryum 06.08.2026).
+var LUNORA_CHAIN = [
+  { word:'Lunora', aria:'Lunora. Проект.', world:'lunora', ring:'spiral',   ringMs:1200 },
+  { word:'Noira',  aria:'Noira. Проект.',  world:'noira',  ring:'wipe',     ringMs:1100,
+    link:{ url:'https://youtube.com/playlist?list=PLuaNqEUb7SmXUdZlHeY4HgbE29TWwfTiW&si=1K-pyHfJoyT9eOG5', label:'Noira на YouTube', aria:'Noira на YouTube' } },
+  { word:'Zaryum', aria:'Zaryum. Проект.', world:'zaryum', ring:'dissolve', ringMs:1300,
+    link:{ url:'https://youtube.com/playlist?list=PLuaNqEUb7SmVnWfr6seNIC_8uMPZSc-Xd&si=-vuaO4UCriYOpILv', label:'Zaryum на YouTube', aria:'Zaryum на YouTube' } }
+];
