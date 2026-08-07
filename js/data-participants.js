@@ -35,13 +35,18 @@ var PARTICIPANT_FX_ORDER = ['gold_enter','soft_only','flash_warm','no_fx','strea
 // Не заполнено — карточка сама покажет 🔴? вместо строки, а не пустоту. lastClip даёт цветной
 // кружок строке «Последний клип»: 🟢 ≤14 дней, 🟡 ≤30, 🔴 больше месяца. (memberCount сюда не
 // относится — он только у проектов, см. data-projects.js.)
+// 08.08.2026, Создатель: «отметить, у кого фото в торе уже своё, а у кого ещё нет — нужно прислать
+// фото, каким хочешь видеть себя в своём торе». photoConfirmed:true — только если сама звезда
+// прислала именно этот файл (проверено по факту: Галя/Алина сами скинули новые фото в этой сессии).
+// У остальных фото сейчас взято Клодом из архива/переписки — не их собственный выбор, значит поля
+// нет вообще, и карточка сама покажет «нужно прислать своё фото».
 var PARTICIPANT_CHAIN = [
   // 07.08.2026, Создатель уточнил: не замена, а все три сразу — «руководитель бест / руководитель
   // news / руководитель jelly». badge даёт первую пилюлю (Best), leads — остальные по порядку.
-  { word:'Галя',     aria:'Галя. Руководитель проекта Best.', world:'p_galya',    handle:'not_yours21.02',        photo:'galia', leader:true, badge:'Руководитель Best', leads:['News','Jelly'] },
+  { word:'Галя',     aria:'Галя. Руководитель проекта Best.', world:'p_galya',    handle:'not_yours21.02',        photo:'galia', leader:true, badge:'Руководитель Best', leads:['News','Jelly'], photoConfirmed:true },
   // 06.08.2026 — реальный факт из переписки «Руководство проекта Best» (05-06.08.2026): Галя
   // спросила себе заместителя, Маша отказалась, Алина согласилась «ради Гали». Андрей подтвердил.
-  { word:'Алина',    aria:'Алина. Заместитель руководителя Best.', world:'p_alina',    handle:'im_your_asya', photo:'alina', badge:'Заместитель руководителя Best', leads:['Aleorix','Anibrox'] },
+  { word:'Алина',    aria:'Алина. Заместитель руководителя Best.', world:'p_alina',    handle:'im_your_asya', photo:'alina', badge:'Заместитель руководителя Best', leads:['Aleorix','Anibrox'], photoConfirmed:true },
   { word:'Мария',    aria:'Мария. Участник BEST.',    world:'p_maria',    handle:'angelidemon22.07.88m',  photo:'masha', leads:['Dualis','Lunora','Finger Dance'] },
   { word:'Вива',     aria:'Вива. Участник BEST.',     world:'p_viva',     handle:'vikaviva5',             photo:'viva', leads:['Animix','Dualis'] },
   { word:'Дима',     aria:'Дима. Участник BEST.',     world:'p_dima',     handle:'momentonoriarti',       photo:'dima' },
