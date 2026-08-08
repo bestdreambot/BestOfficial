@@ -53,14 +53,28 @@ var PARTICIPANT_CHAIN = [
   { word:'Алина',    aria:'Алина. Заместитель руководителя Best.', world:'p_alina',    handle:'alinochka_vtb', photo:'alina', badge:'Заместитель руководителя Best', leads:['Aleorix','Anibrox'], photoConfirmed:true },
   { word:'Мария',    aria:'Мария. Участник BEST.',    world:'p_maria',    handle:'angelidemon22.07.88m',  photo:'masha', leads:['Dualis','Lunora','Finger Dance'] },
   { word:'Вива',     aria:'Вива. Участник BEST.',     world:'p_viva',     handle:'vikaviva5',             photo:'viva', leads:['Animix','Dualis'] },
-  { word:'Дима',     aria:'Дима. Участник BEST.',     world:'p_dima',     handle:'momentonoriarti',       photo:'dima' },
+  // 08.08.2026, Андрей: «Дима — помогает в проекте Aleorix, помогает в проекте Anibrox» — не
+  // руководитель (leads), отдельное поле helps для факта «помогает», такое же кликабельное на
+  // карточке (см. openStarCard в best-app.js). red — прямое слово Андрея «нужно больше информации»,
+  // показывается в Процессе, не в презентации.
+  { word:'Дима',     aria:'Дима. Участник BEST.',     world:'p_dima',     handle:'momentonoriarti',       photo:'dima', helps:['Aleorix','Anibrox'], red:['Нужно больше информации'] },
   { word:'Маша',     aria:'Маша. Участник BEST.',     world:'p_masha',    handle:'mayshonok1994',        photo:'maria', leads:['Fovela'] },
   { word:'Виктория', aria:'Виктория. Участник BEST.', world:'p_viktoria', handle:'tori_fomi2383',        photo:'torri', leads:['hit.parad official'] },
   // 07.08.2026, Создатель: «Олеся вернулась на проект... добавь после Вика Торри». TikTok-адрес
   // подтверждён следующим сообщением: @schastie_moe_.
   { word:'Олеся',    aria:'Олеся. Участник BEST.',    world:'p_olesya',   handle:'schastie_moe_',         photo:'olesya', leads:['Rush','Rock Party'] },
   { word:'Валя',     aria:'Валя. Участник BEST.',     world:'p_valya',    handle:'izbalovannoe..chudo',   photo:'valya' },
-  { word:'Ира',      aria:'Ира. Участник BEST.',      world:'p_ira',      handle:'26koroleva_ada',       photo:'ira', leads:['Moon'] },
+  // 08.08.2026, Андрей: Ира (руководитель арт-проекта Moon, где люди разукрашивают себе лицо)
+  // прислала свою разукрашенную фотографию — поставлена как аватар в её тор (photos/ira.jpg
+  // заменён этим файлом, было архивное фото). photoConfirmed:true — её собственный выбор, тот же
+  // принцип, что у Гали/Алины. facts — то же самое публично, в её собственной презентации.
+  // 08.08.2026, Андрей: «фото очень крупно вставил, должно быть видно голову шею» — проверено, сама
+  // фотография макро (только лицо в кадре, без шеи/плеч), обычный cover обрезает ещё больше.
+  // Андрей выбрал «оставить это фото, максимально раскадрировать» — photoFit:'contain' показывает
+  // фото целиком, без дополнительной обрезки под круг (единственный человек с этим полем — у
+  // остальных фото шире кадра, обрезка под круг не теряет голову/шею).
+  { word:'Ира',      aria:'Ира. Участник BEST.',      world:'p_ira',      handle:'26koroleva_ada',       photo:'ira', leads:['Moon'], photoConfirmed:true, photoFit:'contain',
+    facts:['Руководитель арт-проекта Moon — участники разукрашивают себе лицо', 'Прислала свою разукрашенную фотографию — теперь в её торе'] },
   { word:'Виталий',  aria:'Виталий. Участник BEST.',  world:'p_vitali',   handle:'mostwanted_86',        photo:'vitali' },
   { word:'Оксана',   aria:'Оксана. Участник BEST.',   world:'p_oksana',   handle:'oks7440',               photo:'oksana' },
   { word:'Саша',     aria:'Саша. Участник BEST.',     world:'p_sasha',    handle:'19._black_fenix_.91',  photo:'sasha' },

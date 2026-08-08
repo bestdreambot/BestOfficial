@@ -401,8 +401,14 @@
   // 08.08.2026, Создатель: «нажимаю релиз — сразу 2 карточки: слева презентация, справа рабочий
   // список» — презентация живёт в той же модалке releaseCard, вторая панель.
   var presentationBodyEl = document.getElementById('presentationBody');
+  // 08.08.2026, Андрей (на примере Иры): «фото очень крупно вставил... должно быть видно голову
+  // шею». Проверил — сама присланная фотография макро (только лицо, без шеи/плеч в кадре), обычный
+  // cover обрезает ещё больше при вписывании в круг. photoFit — необязательное поле на любом
+  // участнике (см. data-participants.js): 'contain' показывает фото целиком без обрезки (по
+  // короткой стороне), вместо обрезки под квадрат/круг. По умолчанию (поле не задано) — как раньше.
   function showHolePhoto(p){
     holePhotoEl.src = PARTICIPANT_PHOTOS[p.photo] || '';
+    holePhotoEl.style.objectFit = p.photoFit || '';
     holePhotoEl.classList.toggle('leader', !!p.leader);
     holePhotoEl.classList.add('show');
     stageEl.classList.add('photo-mode');
@@ -598,6 +604,65 @@
       activateProject(0);
     }
   }
+  // 08.08.2026, Андрей: «меняю логику — стрелка назад возвращает на шаг назад, а не на предыдущий
+  // medium-тор» — не движение по фиксированному порядку библиотеки, а настоящий стек «откуда
+  // пришли» (как кнопка «назад» в браузере). cardHistory копит карточки, с которых реально ушли
+  // кнопкой/центром-тора; goBackCard() снимает верхнюю и возвращает туда же, не кладя её обратно.
+  var cardHistory = [];
+  function currentCardIdentity(){
+    if(lunoraMode) return null;
+    if(participantsMode) return { kind:'p', name: PARTICIPANT_CHAIN[participantIdx].word };
+    if(wordState >= 1 && wordState <= PROJECTS.length) return { kind:'j', name: PROJECTS[wordState-1].word };
+    return null;
+  }
+  function pushCardHistory(){
+    var cur = currentCardIdentity();
+    if(cur) cardHistory.push(cur);
+  }
+  // gotoParticipant/gotoProject — сам переход, без записи в историю (ими пользуется и обычный
+  // прыжок вперёд, и возврат назад — иначе «назад» само записывало бы себя в историю).
+  function gotoParticipant(name){
+    var idx = -1;
+    for(var i=0;i<PARTICIPANT_CHAIN.length;i++){ if(PARTICIPANT_CHAIN[i].word === name){ idx = i; break; } }
+    if(idx === -1) return;
+    tgHaptic();
+    closeCard();
+    if(lunoraMode){ lunoraMode = false; navLunora.classList.remove('active'); }
+    participantsMode = true;
+    navLeft.classList.add('active');
+    navLunora.classList.remove('show');
+    participantIdx = idx;
+    enterParticipant(idx);
+    openStarCard(PARTICIPANT_CHAIN[idx]);
+  }
+  function gotoProject(name){
+    var idx = -1;
+    for(var i=0;i<PROJECTS.length;i++){ if(PROJECTS[i].word === name){ idx = i; break; } }
+    if(idx === -1) return;
+    tgHaptic();
+    closeCard();
+    if(lunoraMode){ lunoraMode = false; navLunora.classList.remove('active'); }
+    participantsMode = false;
+    navLeft.classList.remove('active');
+    activateProject(idx);
+    openProjectCard(PROJECTS[idx]);
+  }
+  // 08.08.2026, Андрей: «это действительно кнопка» — из карточки любого проекта (Moon, Anibrox, ...)
+  // кнопка «Руководитель Ира» переключает главный тор прямо на Иру и открывает её собственную
+  // карточку, тем же путём, что обычный вход в звёзд (participantsMode + enterParticipant), только
+  // сразу на нужном имени, а не с Гали. Записывает текущую карточку в историю перед прыжком.
+  function jumpToParticipant(name){ pushCardHistory(); gotoParticipant(name); }
+  // 08.08.2026, Андрей: то же самое в обратную сторону — кнопка с названием проекта (бейдж
+  // «Звезда Best» наверху карточки звезды, факт «Руководитель Animix» в презентации) сразу
+  // переключает главный тор на этот проект и открывает его карточку.
+  function jumpToProject(name){ pushCardHistory(); gotoProject(name); }
+  // 08.08.2026, Андрей: кнопка «назад» — не «предыдущий по списку», а реальный откат: снимает
+  // последнюю карточку из истории и открывает именно её.
+  function goBackCard(){
+    if(!cardHistory.length) return;
+    var prev = cardHistory.pop();
+    if(prev.kind === 'p'){ gotoParticipant(prev.name); } else { gotoProject(prev.name); }
+  }
   function goHome(){
     closeCard();
     if(participantsMode){ toggleParticipantsMode(); return; }
@@ -632,7 +697,37 @@
   // иначе нечем будет листать звёзды, пока видно фото.
   holePhotoEl.addEventListener('click', onWordActivate);
 
-  function renderPills(el, labels){ el.innerHTML = labels.map(function(r){ return '<span class="card-pill">'+r+'</span>'; }).join(''); }
+  // 08.08.2026, Андрей: «это действительно кнопка» — та же идея, что renderPresentation ниже:
+  // элемент labels[i] — либо обычная строка, либо {text, action} для настоящей кликабельной кнопки
+  // (звезда Best наверху карточки участника — жмёшь, открывается Best).
+  function renderPills(el, labels){
+    el.innerHTML = labels.map(function(item, i){
+      var isBtn = item && typeof item === 'object';
+      var text = isBtn ? item.text : item;
+      return '<span class="card-pill'+(isBtn?' card-pill-link':'')+'"'+(isBtn?' role="button" tabindex="0" data-idx="'+i+'"':'')+'>'+text+'</span>';
+    }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('.card-pill-link'), function(node){
+      var action = labels[+node.getAttribute('data-idx')].action;
+      node.addEventListener('click', action);
+      node.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); action(); } });
+    });
+  }
+  // 08.08.2026, Андрей: то же место, что «Руководитель Ира», но это настоящая кнопка — ведёт прямо
+  // на тор и карточку этого человека (jumpToParticipant). Кнопка только если имя реально есть в
+  // PARTICIPANT_CHAIN (найдена своя карточка) — «нет руководителя»/предварительное имя из
+  // PROJECT_PENDING_LEADS остаются обычной, не кликабельной подписью, вести им пока некуда.
+  function renderLeaderPills(el, leaders){
+    if(!leaders.length){ el.innerHTML = '<span class="card-pill">🔴 Руководителя нет</span>'; return; }
+    el.innerHTML = leaders.map(function(name){
+      var known = PARTICIPANT_CHAIN.some(function(p){ return p.word === name; });
+      return '<span class="card-pill'+(known?' card-pill-link':'')+'"'+(known?' role="button" tabindex="0" data-name="'+name+'"':'')+'>Руководитель '+name+'</span>';
+    }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('.card-pill-link'), function(pill){
+      var name = pill.getAttribute('data-name');
+      pill.addEventListener('click', function(){ jumpToParticipant(name); });
+      pill.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); jumpToParticipant(name); } });
+    });
+  }
   // 08.08.2026, Создатель: «нажимаю релиз — 3 зелёных/3 жёлтых/3 красных... все карточки хочу
   // видеть в таком формате» — один общий рендер для Релиза, любого проекта и любой звезды:
   // 🟢 известно точно, 🟡 уточняется/неполно, 🔴 нужно узнать. Единый вид на весь сайт.
@@ -653,12 +748,27 @@
   // Релизе, и на любой карточке проекта/звезды) рендерится этой функцией: только подтверждённое
   // (зелёное), звёздными иконками, без сухих заголовков групп.
   var PRESENTATION_ICONS = ['⭐','🌟','✨','💫','🌠'];
+  // 08.08.2026, Андрей: «в презентации это тоже не просто список, а кнопки» — факт может быть либо
+  // обычной строкой, либо объектом {text, action} — тогда он рендерится как настоящая кнопка
+  // (курсор, стрелка, клик/Enter зовёт action()), например «Руководитель Animix» ведёт на карточку
+  // Animix, «В TikTok: Vika Anime» открывает сам TikTok. Формат не ломает старые вызовы (строки
+  // работают как раньше) — PRESENTATION_INFO, зелёные списки без ссылок и т.д. не трогать.
   function renderPresentation(el, items){
     if(!items || !items.length){
       el.innerHTML = '<div class="presentation-item">🌌 Пока нет ни одного подтверждённого факта — эталон появится, как только он будет</div>';
       return;
     }
-    el.innerHTML = items.map(function(t, i){ return '<div class="presentation-item">'+PRESENTATION_ICONS[i % PRESENTATION_ICONS.length]+' '+t+'</div>'; }).join('');
+    el.innerHTML = items.map(function(t, i){
+      var isBtn = t && typeof t === 'object';
+      var text = isBtn ? t.text : t;
+      var icon = PRESENTATION_ICONS[i % PRESENTATION_ICONS.length];
+      return '<div class="presentation-item'+(isBtn?' presentation-item-link':'')+'"'+(isBtn?' role="button" tabindex="0" data-idx="'+i+'"':'')+'>'+icon+' '+text+'</div>';
+    }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('.presentation-item-link'), function(node){
+      var action = items[+node.getAttribute('data-idx')].action;
+      node.addEventListener('click', action);
+      node.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); action(); } });
+    });
   }
   // 07.08.2026: Олеся больше не «готовится» — она реальная звезда в PARTICIPANT_CHAIN с
   // leads:['Rush'] (было 'Valmont', переименовано 08.08.2026), карточка Rush находит её сама через
@@ -682,7 +792,11 @@
     'Voice':            ['Пока только идея — 0 клипов, ни одного факта, кроме названия'],
     'Dostar':           ['Раньше назывался Kazakh — переименован в Dostar'],
     'Rush':             ['Раньше назывался Valmont — переименован в Rush по настоянию Олеси, 08.08.2026'],
-    'Coffee':           ['Само название пока «можно обдумать» — ещё не устоялось']
+    'Coffee':           ['Само название пока «можно обдумать» — ещё не устоялось'],
+    // 08.08.2026, Андрей: «Moon — арт-проект, где люди разукрашивают своё лицо». Руководитель Ира
+    // прислала свою разукрашенную фотографию — тот же факт продублирован публично на её карточке
+    // (см. facts у Иры в data-participants.js), здесь — про сам проект.
+    'Moon':             ['Арт-проект — участники разукрашивают себе лицо', 'Руководитель Ира прислала свою разукрашенную фотографию']
   };
   function openCard(){ cardEl.classList.add('open'); cardEl.setAttribute('aria-hidden','false'); }
   function closeCard(){ cardEl.classList.remove('open'); cardEl.setAttribute('aria-hidden','true'); cardMiniTorusVisible = false; }
@@ -719,7 +833,8 @@
     var extra = PARTICIPANTS.filter(function(x){ return x.handle === p.handle; })[0] || {};
     var photo = PARTICIPANT_PHOTOS[p.photo];
     if(photo){
-      cardPhotoEl.src = photo; cardPhotoEl.style.display = ''; cardPhotoWrapEl.style.display = '';
+      cardPhotoEl.src = photo; cardPhotoEl.style.display = ''; cardPhotoEl.style.objectFit = p.photoFit || '';
+      cardPhotoWrapEl.style.display = '';
       cardMiniTorusLabelEl.textContent = ''; // у звезды в центре фото — слово поверх не нужно
       // display был 'none' — clientWidth ещё 0, поэтому размер миниатюрного тора считаем ПОСЛЕ показа.
       resizeMiniTorus(); cardMiniTorusVisible = true;
@@ -729,18 +844,45 @@
     cardNameEl.textContent = p.word; cardNameEl.style.display = ''; // у звезды имя над карточкой — так и должно быть
     // 08.08.2026, Создатель (на примере Гали): «после имени оставь только руководитель Best» —
     // верхняя пилюля больше не дублирует весь список leads, только сам статус/badge.
-    renderPills(cardRolesEl, [p.badge || 'Звезда Best']);
+    // 08.08.2026, Андрей: «кнопка звезда Best тоже кликабельна — сразу открывает Best» — любой
+    // вариант этого бейджа (Звезда Best / Руководитель Best / Заместитель руководителя Best)
+    // всегда про один и тот же проект — Best, поэтому кнопка всегда ведёт туда, без доп. логики.
+    renderPills(cardRolesEl, [{ text: p.badge || 'Звезда Best', action:function(){ jumpToProject('Best'); } }]);
     // «в презентации роль руководитель Best убери, оставь руководитель News и Jelly» — presentation
     // не повторяет badge (он уже наверху), только реальные leads-факты.
+    // 08.08.2026, Андрей: «руководитель Animix кнопка кликабельна» — каждый leads-факт, если проект
+    // реально есть в PROJECTS, ведёт на его карточку/тор. «В TikTok: Vika Anime» — то же самое,
+    // открывает сам TikTok-профиль (только если handle реально есть, иначе ссылки нет и не будет).
     var green = [], yellow = [], red = [];
-    (p.leads||[]).forEach(function(l){ green.push('Руководитель '+l); });
-    if(extra.nick && extra.nick !== p.word){ green.push('В TikTok: '+extra.nick); }
+    (p.leads||[]).forEach(function(l){
+      var known = PROJECTS.some(function(pr){ return pr.word === l; });
+      green.push(known ? { text:'Руководитель '+l, action:function(){ jumpToProject(l); } } : 'Руководитель '+l);
+    });
+    if(extra.nick && extra.nick !== p.word){
+      green.push(p.handle
+        ? { text:'В TikTok: '+extra.nick, action:function(){ window.open('https://www.tiktok.com/@'+p.handle, '_blank', 'noopener'); } }
+        : 'В TikTok: '+extra.nick);
+    }
+    // 08.08.2026, Андрей (на примере Димы): «помогает в проекте Aleorix кликабельна, помогает в
+    // проекте Anibrox кликабельна» — не руководитель (leads), отдельный факт «помогает», та же
+    // кнопка на карточку/тор проекта.
+    (p.helps||[]).forEach(function(h){
+      var known = PROJECTS.some(function(pr){ return pr.word === h; });
+      green.push(known ? { text:'Помогает в проекте '+h, action:function(){ jumpToProject(h); } } : 'Помогает в проекте '+h);
+    });
+    // 08.08.2026, Андрей: «каждый раз, если мы о ком-то говорим — открываем карточку и сразу пишем
+    // в презентацию факты». facts — свободные подтверждённые факты о самом человеке (не про
+    // руководство/помощь — для этого свои поля выше), тот же принцип, что PROJECT_FACTS у проектов.
+    (p.facts||[]).forEach(function(f){ green.push(f); });
     // 08.08.2026, Создатель: «отметить, у кого фото в торе уже своё, а у кого нет — нужно прислать
     // фото, каким хочешь видеть себя в своём торе». photoConfirmed:true — сама прислала именно это фото.
     // 08.08.2026, Создатель поправил: фото у остальных — тоже их собственное, просто старое или
     // взятое случайно из архива, не «чужое». Формулировка была неточной, честно исправлена.
     if(p.photoConfirmed){ green.push('Фото в торе — своё, прислала сама'); }
     else { red.push('Фото в торе — старое/случайное из архива, пришли более свежее, каким хочешь видеть себя в своём торе'); }
+    // 08.08.2026, Андрей: «в процесс добавь — нужно больше информации в красном окне» — необязательное
+    // поле red на любой звезде (пока используется только у Димы), появляется в Процессе (🔴).
+    (p.red||[]).forEach(function(r){ red.push(r); });
     pushClipFacts(green, yellow, red, p, false);
     renderPresentation(cardFactsEl, green);
     renderStatusCard(cardStatsEl, yellow, red);
@@ -764,7 +906,9 @@
     // 07.08.2026, Создатель: «надпись должна быть руководитель Галя» — тот же вид, что на карточке
     // самой звезды («Руководитель Best»), а не короткое «Руководит: …».
     // 08.08.2026: если руководителя нет вообще — красная пилюля вместо пустого места, видно сразу.
-    renderPills(cardRolesEl, leaders.length ? leaders.map(function(l){ return 'Руководитель '+l; }) : ['🔴 Руководителя нет']);
+    // 08.08.2026, Андрей: «булька руководитель кликабельна, кидает на тор руководителя» —
+    // renderLeaderPills вместо обычной renderPills, каждая известная звезда кликабельна.
+    renderLeaderPills(cardRolesEl, leaders);
     // 08.08.2026: тот же принцип, что у звёзд — руководитель уже виден в пилюлях наверху,
     // презентация его не повторяет, только дополнительные факты.
     var green = [], yellow = [], red = [];
@@ -832,11 +976,13 @@
   // разговор / что сделано», та же идея, что раньше была только в Версии, теперь здесь.
   var RELEASE_INFO = {
     title: 'Процесс',
-    session: '08.08.2026 — Релиз 4.3 выпущен: карточка «Версия» убрана целиком, теперь один ' +
-      'документ — Релиз (метка растёт дробно 4.2→4.3…). Exclusive Man: адрес исправлен на ' +
-      'best_exclusive.man (была опечатка, ссылка не открывалась). Moon: новый цвет — ' +
-      'сине-фиолетовый, между сиреневым и синим. Готовим Релиз 5 — старые пункты уже ' +
-      'опубликованы, здесь только новое.',
+    session: '08.08.2026 — Релиз 4.31 выпущен: Moon переставлен перед Grand Show. Руководители/' +
+      '«помогает»/бейдж звезды — теперь настоящие кнопки, ведут прямо на карточку/тор человека или ' +
+      'проекта (и в презентации, и наверху карточки). Дима: добавлены факты «помогает в Aleorix/' +
+      'Anibrox». Ира: своя разукрашенная фотография в торе (арт-проект Moon), факт — и на её ' +
+      'карточке, и на карточке Moon. Клик по medium-тору внутри карточки листает все карточки по ' +
+      'кругу (звёзды → проекты); кнопка «назад» — теперь настоящая история переходов, а не просто ' +
+      'предыдущая по списку. Готовим Релиз 5 — старые пункты уже опубликованы, здесь только новое.',
     readyStatus: 'not-ready',
     readiness: '🔴 Идёт подготовка к Релизу 5 — ждём одного открытого вопроса ниже.',
     yellow: [
@@ -936,9 +1082,37 @@
   function handleNavLunora(){ tgHaptic(); enterLunora(); }
   navLunora.addEventListener('click', handleNavLunora);
   navLunora.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handleNavLunora(); } });
-  cardEl.querySelector('.card-backdrop').addEventListener('click', closeCard);
-  cardEl.querySelector('.card-close').addEventListener('click', closeCard);
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeCard(); closeReleaseCard(); } });
+  // 08.08.2026: настоящее закрытие (крестик/фон/Escape) обнуляет cardHistory — следующее открытие
+  // карточки начинает историю заново, а не продолжает прошлую сессию просмотра.
+  function closeCardReset(){ cardHistory.length = 0; closeCard(); }
+  cardEl.querySelector('.card-backdrop').addEventListener('click', closeCardReset);
+  // 08.08.2026, баг: кнопка «назад» тоже носит класс card-close (ради общего вида) — querySelector
+  // без уточнения находил ЕЁ первой (она раньше в разметке), а не настоящий крестик. Крестик
+  // оставался без обработчика, «назад» неожиданно ещё и закрывала карточку. :not(.card-back)
+  // явно берёт только настоящую кнопку закрытия.
+  cardEl.querySelector('.card-close:not(.card-back)').addEventListener('click', closeCardReset);
+  // 08.08.2026, Андрей: «нажимаю в центр medium-тор — сразу переключаюсь на следующую звезду, потом
+  // проекты, и всё что вообще есть — такая библиотека карточек по кругу». Единая последовательность:
+  // сначала все звёзды (PARTICIPANT_CHAIN), потом все проекты (PROJECTS), после последнего — снова
+  // первая звезда. Lunora — отдельный маленький режим (не в общей цепочке PROJECTS), в библиотеку не
+  // входит, клик там просто ничего не делает. Каждый клик — запись в cardHistory, чтобы «назад» мог
+  // реально откатить именно этот шаг.
+  function cycleLibraryNext(){
+    if(lunoraMode) return;
+    var total = PARTICIPANT_CHAIN.length + PROJECTS.length;
+    var idx;
+    if(participantsMode){ idx = participantIdx; }
+    else if(wordState >= 1 && wordState <= PROJECTS.length){ idx = PARTICIPANT_CHAIN.length + (wordState - 1); }
+    else { return; }
+    var next = (idx + 1) % total;
+    if(next < PARTICIPANT_CHAIN.length){ jumpToParticipant(PARTICIPANT_CHAIN[next].word); }
+    else { jumpToProject(PROJECTS[next - PARTICIPANT_CHAIN.length].word); }
+  }
+  cardPhotoWrapEl.addEventListener('click', cycleLibraryNext);
+  cardPhotoWrapEl.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cycleLibraryNext(); } });
+  var cardBackEl = cardEl.querySelector('.card-back');
+  if(cardBackEl){ cardBackEl.addEventListener('click', goBackCard); }
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeCardReset(); closeReleaseCard(); } });
 
   // 06.08.2026: убран безусловный таймер показа mktor от момента загрузки (было 2200мс всегда).
   // На главной BestOfficial (до первого клика по слову) mktor теперь не появляется вовсе — см.

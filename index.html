@@ -234,7 +234,10 @@
      в карточке». Не отдельная копия физики частиц (дорого, дублирует систему) — слепок уже
      отрисованного главного канваса (drawImage в JS), тот же цвет/движение, просто уменьшенный, за
      фото, кольцом вокруг него. */
-  .card-photo-wrap{ position:relative; width:min(38vw, 156px); aspect-ratio:1/1; margin:0 auto 12px; }
+  .card-photo-wrap{ position:relative; width:min(38vw, 156px); aspect-ratio:1/1; margin:0 auto 12px; cursor:pointer; }
+  /* 08.08.2026, Андрей: клик по medium-тору — библиотека карточек по кругу; лёгкая подсветка,
+     чтобы было видно, что это кнопка, а не просто картинка. */
+  .card-photo-wrap:hover, .card-photo-wrap:focus-visible{ filter:brightness(1.12); outline:none; }
   .card-mini-torus{ position:absolute; inset:0; width:100%; height:100%; }
   .card-photo{
     position:absolute; inset:14%; width:72%; height:72%; margin:0;
@@ -274,6 +277,9 @@
     border:1px solid rgba(255,214,140,.25); background:rgba(255,255,255,.04); color:rgba(255,224,170,.85);
     font-size:18px; line-height:1; cursor:pointer;
   }
+  /* 08.08.2026, Андрей: «кнопка назад вверху слева, такая же как крестик» — тот же вид (card-close),
+     зеркально слева вместо справа. */
+  .card-back{ right:auto; left:12px; font-size:22px; }
   /* 08.08.2026, Создатель: «нажимаю релиз — сразу 2 карточки: слева презентация, справа рабочий
      список» — одна модалка, две панели рядом (на узком экране сами переносятся друг под друга —
      презентация первой, как «слева» и есть по чтению).
@@ -296,6 +302,13 @@
   .presentation-item{
     margin:8px 0; font-family:Georgia, serif; font-size:13px; line-height:1.5; color:rgba(230,220,200,.92);
   }
+  /* 08.08.2026, Андрей: «это действительно кнопка» — факт в презентации (руководитель проекта,
+     ник в TikTok...) может вести на другую карточку/тор или на TikTok, тогда это кнопка, не
+     просто строка: курсор, стрелка-намёк, подсветка на hover/focus, та же логика, что у
+     card-pill-link наверху карточки. */
+  .presentation-item-link{ cursor:pointer; border-radius:6px; padding:2px 6px; margin-left:-6px; transition:background .15s, color .15s; }
+  .presentation-item-link::after{ content:' ›'; opacity:.6; }
+  .presentation-item-link:hover, .presentation-item-link:focus-visible{ background:rgba(255,214,140,.08); color:#fff6d6; outline:none; }
   /* 07.08.2026, Андрей: «нажимаю релиз — сразу вижу, о чём был прошлый разговор» — короткий якорь
      над списком сделанного, визуально отделён (курсив + нижняя рамка), не смешивается со списком.
      08.08.2026: переехало из карточки «Версия» (удалена) сюда, в «Релиз» — тот же класс, новый ID. */
@@ -321,6 +334,14 @@
     font-family:"Cinzel", serif; font-size:11px; letter-spacing:.05em; text-transform:uppercase;
     color:#ffd558; background:rgba(255,213,88,.08); border:1px solid rgba(255,213,88,.22);
     border-radius:100px; padding:4px 12px;
+  }
+  /* 08.08.2026, Андрей: «булька руководитель кликабельна, кидает на тор руководителя» — пилюля
+     руководителя в карточке проекта ведёт прямо на карточку/тор этого человека. Та же форма, что
+     обычная card-pill, плюс явный намёк на кликабельность (курсор, чуть ярче на hover/focus). */
+  .card-pill-link{ cursor:pointer; transition:background .15s, border-color .15s; }
+  .card-pill-link::after{ content:' ›'; opacity:.7; }
+  .card-pill-link:hover, .card-pill-link:focus-visible{
+    background:rgba(255,213,88,.2); border-color:rgba(255,213,88,.5); outline:none;
   }
   .card-fact{ margin:6px 0; font-family:Georgia, serif; font-size:13px; color:rgba(230,220,200,.85); }
   /* 07.08.2026, Создатель: «нужно подумать сколько клипов, когда выходил последний, когда первый
@@ -354,7 +375,7 @@
        «Версия» удалена целиком (два параллельных документа путали, откуда берутся расхождения).
        Одна метка «Релиз» — статус всего проекта, видна всем, растёт дробно (4.2 → 4.21 → 4.22…) с
        каждой локальной правкой; см. стандарт в CLAUDE.md («Release-label standard»). -->
-  <span id="releaseLabel" class="release-label" role="button" tabindex="0">Релиз 4.3</span>
+  <span id="releaseLabel" class="release-label" role="button" tabindex="0">Релиз 4.31</span>
   <!-- 08.08.2026, Создатель: «нажимаю на релиз — сразу 2 карточки: слева презентация (аккуратно,
        что уже точно сделано), справа рабочий список (сюда буду добавлять/менять)». -->
   <div id="releaseCard" class="card" role="dialog" aria-modal="true" aria-hidden="true">
@@ -399,11 +420,17 @@
   <div id="card" class="card" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="card-backdrop"></div>
     <div class="card-body">
+      <!-- 08.08.2026, Андрей: «кнопка назад вверху слева, такая же как крестик — показывает
+           предыдущий medium-тор» — та же библиотека карточек по кругу (cardPhotoWrap), только в
+           обратную сторону. Только на карточке проекта/звезды — у Релиза (не часть библиотеки) её нет. -->
+      <button class="card-close card-back" type="button" aria-label="Предыдущая карточка">‹</button>
       <button class="card-close" type="button" aria-label="Закрыть">×</button>
       <!-- 08.08.2026, Создатель: «в medium-тор проектов вставь название — Best и так же все
            проекты». У звезды в центре фото, у проекта фото нет — значит слово ложится прямо на
-           тор, тем же приёмом, что и главное слово на главном Кторе. -->
-      <div id="cardPhotoWrap" class="card-photo-wrap" style="display:none">
+           тор, тем же приёмом, что и главное слово на главном Кторе.
+           08.08.2026, Андрей: «нажимаю в центр medium-тор — сразу следующая карточка, библиотека
+           по кругу» — сам medium-тор кликабелен (role=button, фокусируется с клавиатуры). -->
+      <div id="cardPhotoWrap" class="card-photo-wrap" style="display:none" role="button" tabindex="0" aria-label="Следующая карточка">
         <canvas id="cardMiniTorus" class="card-mini-torus" aria-hidden="true"></canvas>
         <img id="cardPhoto" class="card-photo" alt="">
         <span id="cardMiniTorusLabel" class="card-mini-torus-label" aria-hidden="true"></span>

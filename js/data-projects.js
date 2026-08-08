@@ -39,6 +39,8 @@ var PROJECTS = [
   { word:'Dualis',          aria:'Dualis. Проект.',          world:'dualis',          tiktok:'best.duet.show',     ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
   { word:'Animix',          aria:'Animix. Проект.',          world:'animix',          tiktok:'best.anime.show',    ring:'spiral',   ringMs:1200, fx:'streak_only' },
   { word:'Fovela',          aria:'Fovela. Проект.',          world:'fovela',          tiktok:'best_fovela',        ring:'spiral',   ringMs:1200, fx:'gold_enter'  },
+  // 08.08.2026, Андрей: «моон поставь до гранд шоу» — переставлен сюда с места после Exclusive Man.
+  { word:'Moon',            aria:'Moon. Проект.',            world:'moon',            tiktok:'best.moon.show',     ring:'wipe',     ringMs:1100, fx:'no_fx'       },
   { word:'Grand Show',      aria:'Grand Show. Проект.',      world:'grand_show',      tiktok:'best.grand.show',    ring:'portal',   ringMs:1000, fx:'soft_only'   },
   { word:'Exclusive Stars', aria:'Exclusive Stars. Проект.', world:'exclusive_stars', tiktok:'best.exclusive.stars', ring:'wipe',   ringMs:1100, fx:'no_fx'       },
   // 07.08.2026, Андрей нашёл ещё один проект: «бест ексклюзив мэн @best_exlusive.man, руководитель
@@ -47,8 +49,8 @@ var PROJECTS = [
   // 08.08.2026, Андрей: ссылка не работала — в адресе была опечатка (`exlusive` вместо `exclusive`).
   // Подтверждён оригинальный адрес: `best_exclusive.man`.
   { word:'Exclusive Man',   aria:'Exclusive Man. Проект.',   world:'exclusive_man',   tiktok:'best_exclusive.man', ring:'spiral',   ringMs:1200, fx:'streak_only' },
-  { word:'Moon',            aria:'Moon. Проект.',            world:'moon',            tiktok:'best.moon.show',     ring:'wipe',     ringMs:1100, fx:'no_fx'       },
-  // 07.08.2026, Создатель: «рок парти после моон» — переставлен с самого конца цепочки.
+  // 07.08.2026, Создатель: «рок парти после моон» — переставлен с самого конца цепочки. Moon с
+  // 08.08.2026 уже не соседний шаг (стоит перед Grand Show), но по цепочке всё ещё раньше Rock Party.
   { word:'Rock Party',      aria:'Rock Party. Проект.',      world:'rock_party',      tiktok:'best.rock.party',    ring:'burst',    ringMs:900,  fx:'no_fx'       },
   { word:'Nerix',           aria:'Nerix. Проект.',           world:'nerix',           tiktok:'best.comedy.show',   ring:'burst',    ringMs:900,  fx:'streak_only' },
   { word:'News',            aria:'News. Проект.',            world:'news',            tiktok:'best.news.show',     ring:'spiral',   ringMs:1200, fx:'gold_enter'  },
