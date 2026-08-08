@@ -19,10 +19,16 @@
 //   lastClip:   '2026-08-03'  — дата последнего клипа (YYYY-MM-DD), из неё же считается кружок
 //                                строки «Последний клип»: 🟢 ≤14 дней, 🟡 ≤30 дней, 🔴 больше месяца.
 //   memberCount: 6            — сколько человек на проекте (только у проектов, не у звёзд)
+// 08.08.2026, Андрей: два реальных TikTok-аккаунта сознательно НЕ в этой цепочке, пока не задан
+// — не забыть, не путать с «упустили»: Arhiv (@best.arhiv.show, исключён ещё в Релизе 1.2 — «в
+// официальной версии архив не интересует») и HitParad (@best.my.stars, пока пустой аккаунт без
+// видео — «пока что не показывай», как и Arhiv). Не добавлять ни один без нового прямого слова.
 var PROJECTS = [
   { word:'Best',            aria:'Best. Проект.',            world:'best',            tiktok:'best.show.official', ring:'portal',   ringMs:1000, fx:'gold_enter',  bright:true },
   { word:'Aleorix',         aria:'Aleorix. Проект.',         world:'aleorix',         tiktok:'aleorix0',           ring:'dissolve', ringMs:1300, fx:'soft_only',   bright:true },
-  { word:'Anibrox',         aria:'Anibrox. Проект.',         world:'anibrox',         tiktok:'best.anibrox',       ring:'portal',   ringMs:1000, fx:'soft_only'   },
+  // 08.08.2026, Андрей прислал скриншот реального аккаунта — адрес был неполным (`best.anibrox`),
+  // подтверждён полный: `best.anibrox.show`.
+  { word:'Anibrox',         aria:'Anibrox. Проект.',         world:'anibrox',         tiktok:'best.anibrox.show',  ring:'portal',   ringMs:1000, fx:'soft_only'   },
   // 08.08.2026, Андрей: «Олеся настаивает на названии Rush вместо Valmont — да будет так». Название
   // (word/aria/world-палитра) переименовано полностью. TikTok-адрес (`best.valmont.man`) НЕ трогал —
   // это реальный внешний аккаунт, смена имени внутри продукта не значит автоматическую смену самого
@@ -38,7 +44,9 @@ var PROJECTS = [
   // 07.08.2026, Андрей нашёл ещё один проект: «бест ексклюзив мэн @best_exlusive.man, руководитель
   // была Марина Анирам, последний клип в 2021 — уже 5 лет тишины». Ставлю рядом с Exclusive Stars —
   // тот же смысловой ряд, разные миры/цвета, чтобы не путались при листании.
-  { word:'Exclusive Man',   aria:'Exclusive Man. Проект.',   world:'exclusive_man',   tiktok:'best_exlusive.man',  ring:'spiral',   ringMs:1200, fx:'streak_only' },
+  // 08.08.2026, Андрей: ссылка не работала — в адресе была опечатка (`exlusive` вместо `exclusive`).
+  // Подтверждён оригинальный адрес: `best_exclusive.man`.
+  { word:'Exclusive Man',   aria:'Exclusive Man. Проект.',   world:'exclusive_man',   tiktok:'best_exclusive.man', ring:'spiral',   ringMs:1200, fx:'streak_only' },
   { word:'Moon',            aria:'Moon. Проект.',            world:'moon',            tiktok:'best.moon.show',     ring:'wipe',     ringMs:1100, fx:'no_fx'       },
   // 07.08.2026, Создатель: «рок парти после моон» — переставлен с самого конца цепочки.
   { word:'Rock Party',      aria:'Rock Party. Проект.',      world:'rock_party',      tiktok:'best.rock.party',    ring:'burst',    ringMs:900,  fx:'no_fx'       },

@@ -127,11 +127,8 @@
   /* 08.08.2026, Создатель: «нужно ниже, чтобы не касались тора» — тор (.stage) сам по себе квадрат
      min(88vmin,920px), значит его нижний край — center + min(44vmin,460px). Кладём полосу за этим
      краем + отступ, но не ниже видимой области.
-     08.08.2026, снова рядом: «релиз по середине, версия справа от релиза» — «Релиз» стоит на
-     оси 50% сам по себе (left:50%, translateX(-50%)) — его позиция ничем не зависит от «Версии».
-     «Версия» стартует своим ЛЕВЫМ краем на фиксированном отступе от центра (translateX(0), не
-     -50%), поэтому не может наехать на «Релиз» независимо от длины текста той или другой надписи.
-     Версия — только локально (см. JS, скрывается на публичном хосте). */
+     08.08.2026, Андрей: «версию убери, работаем с релизом» — карточка «Версия» и её метка убраны
+     целиком, «Релиз» теперь один, по центру оси 50% (left:50%, translateX(-50%)). */
   .release-label{
     position:fixed; top:min(calc(50% + min(44vmin, 460px) + 22px), calc(100% - 42px));
     z-index:5; opacity:0; animation: wordIn 1.6s cubic-bezier(.16,.9,.25,1) .9s forwards;
@@ -145,9 +142,8 @@
      центр надписи чуть вправо от геометрического центра рамки, эта правка компенсирует именно
      оптику, не меняя позицию «Версии». */
   #releaseLabel{ left:calc(50% - 38px); transform:translateX(-50%); }
-  #versionLabel{ left:calc(50% + 70px); transform:translateX(0); opacity:.6; }
   .release-label:hover, .release-label:focus-visible{ color:#ffd558; border-color:rgba(255,213,88,.45); background:rgba(255,213,88,.06); }
-  @media (prefers-reduced-motion: reduce){ .release-label{ animation:none; opacity:1; } #versionLabel{ opacity:.6; } }
+  @media (prefers-reduced-motion: reduce){ .release-label{ animation:none; opacity:1; } }
   .release-group{ margin:14px 0 0; text-align:left; }
   .release-group:first-of-type{ margin-top:4px; }
   .release-group-title{
@@ -283,10 +279,10 @@
      презентация первой, как «слева» и есть по чтению).
      08.08.2026, распространено на ЛЮБУЮ карточку проекта/звезды (#card) — та же пара «Презентация
      | Процесс», просто под общей шапкой (фото/имя/роли), а не с самого верха модалки. */
-  #releaseCardBodyWrap, #versionCardBodyWrap, #card .card-body{
+  #releaseCardBodyWrap, #card .card-body{
     max-width:min(94vw, 820px);
   }
-  #releaseCardBodyWrap, #versionCardBodyWrap{ display:flex; gap:22px; flex-wrap:wrap; text-align:left; }
+  #releaseCardBodyWrap{ display:flex; gap:22px; flex-wrap:wrap; text-align:left; }
   .card-panels{ display:flex; gap:22px; flex-wrap:wrap; text-align:left; margin-top:14px; }
   .panel{ flex:1 1 260px; min-width:220px; }
   .panel-title{
@@ -300,14 +296,15 @@
   .presentation-item{
     margin:8px 0; font-family:Georgia, serif; font-size:13px; line-height:1.5; color:rgba(230,220,200,.92);
   }
-  /* 07.08.2026, Андрей: «нажимаю версию — сразу вижу, о чём был прошлый разговор» — короткий якорь
-     над списком сделанного, визуально отделён (курсив + нижняя рамка), не смешивается со списком. */
-  .version-session-summary{
+  /* 07.08.2026, Андрей: «нажимаю релиз — сразу вижу, о чём был прошлый разговор» — короткий якорь
+     над списком сделанного, визуально отделён (курсив + нижняя рамка), не смешивается со списком.
+     08.08.2026: переехало из карточки «Версия» (удалена) сюда, в «Релиз» — тот же класс, новый ID. */
+  .release-session-summary{
     margin:0 0 12px; padding-bottom:10px; border-bottom:1px dashed rgba(255,214,140,.22);
     font-family:Georgia, serif; font-style:italic; font-size:12px; line-height:1.5;
     color:rgba(255,214,140,.75);
   }
-  .version-session-summary:empty{ display:none; }
+  .release-session-summary:empty{ display:none; }
   /* 07.08.2026: прямой вердикт готовности к релизу — не спрятан внутри списка пунктов, сразу видно. */
   .release-readiness{
     margin:0 0 14px; padding:10px 14px; border-radius:10px; font-family:"Cinzel", serif;
@@ -353,11 +350,11 @@
     </div>
   </div>
   <a id="tiktokLink" class="tiktok-link" href="https://www.tiktok.com/@best.show.official" target="_blank" rel="noopener noreferrer" aria-label="BestOfficial в TikTok">TikTok</a>
-  <!-- 08.08.2026, Создатель: «прям под тор 2 кликабельные надписи — релиз 4, версия 1» — статус
-       всего проекта целиком, не одного слова в цепочке, поэтому видно с самого начала. Релиз видят
-       все — версия только локально (см. JS ниже), и версия растёт на каждое изменение файлов. -->
-  <span id="releaseLabel" class="release-label" role="button" tabindex="0">Релиз 4.2</span>
-  <span id="versionLabel" class="release-label" role="button" tabindex="0">Версия 2</span>
+  <!-- 08.08.2026, Андрей: «я не пойму, откуда ошибки... версию убери, работаем с релизом» — карточка
+       «Версия» удалена целиком (два параллельных документа путали, откуда берутся расхождения).
+       Одна метка «Релиз» — статус всего проекта, видна всем, растёт дробно (4.2 → 4.21 → 4.22…) с
+       каждой локальной правкой; см. стандарт в CLAUDE.md («Release-label standard»). -->
+  <span id="releaseLabel" class="release-label" role="button" tabindex="0">Релиз 4.3</span>
   <!-- 08.08.2026, Создатель: «нажимаю на релиз — сразу 2 карточки: слева презентация (аккуратно,
        что уже точно сделано), справа рабочий список (сюда буду добавлять/менять)». -->
   <div id="releaseCard" class="card" role="dialog" aria-modal="true" aria-hidden="true">
@@ -366,6 +363,10 @@
       <button class="card-close" type="button" aria-label="Закрыть">×</button>
       <div class="panel presentation-panel">
         <h2 class="panel-title">🎬 Презентация</h2>
+        <!-- 07.08.2026, Андрей: «нажимаю — сразу вижу, о чём был прошлый разговор, что сделано после
+             него» — короткий якорь над списком сделанного. Переехало сюда из бывшей карточки
+             «Версия» 08.08.2026. -->
+        <div id="releaseSessionSummary" class="release-session-summary"></div>
         <div id="presentationBody"></div>
       </div>
       <div class="panel working-panel">
@@ -374,27 +375,6 @@
              прямой вердикт сверху списка, не спрятан внутри пунктов. -->
         <div id="releaseReadiness" class="release-readiness"></div>
         <div id="releaseCardBody"></div>
-      </div>
-    </div>
-  </div>
-  <!-- 08.08.2026, Создатель: «версия — своя карточка, которую хочу видеть только я, слева что уже
-       сделано и точно работает, справа что в процессе» — та же пара Презентация/Процесс, но про
-       сам локальный порт (техническая сторона), не про сообщество Best — и видна только локально. -->
-  <div id="versionCard" class="card" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="card-backdrop"></div>
-    <div class="card-body" id="versionCardBodyWrap">
-      <button class="card-close" type="button" aria-label="Закрыть">×</button>
-      <div class="panel presentation-panel">
-        <h2 class="panel-title">🎬 Презентация</h2>
-        <!-- 07.08.2026, Андрей: «нажимаю на версию — сразу вижу, о чём был прошлый разговор, что
-             сделано после него, что нужно уточнить, что вообще не сделано — полная картина». Эта
-             строка — короткий якорь «о чём был разговор», над списком сделанного. -->
-        <div id="versionSessionSummary" class="version-session-summary"></div>
-        <div id="versionPresentationBody"></div>
-      </div>
-      <div class="panel working-panel">
-        <h2 id="versionCardTitle" class="panel-title"></h2>
-        <div id="versionCardBody"></div>
       </div>
     </div>
   </div>

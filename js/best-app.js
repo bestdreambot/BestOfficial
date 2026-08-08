@@ -386,22 +386,21 @@
   var cardStatsEl = document.getElementById('cardStats');
   var cardPhotoEl = document.getElementById('cardPhoto'), cardPhotoWrapEl = document.getElementById('cardPhotoWrap');
   var cardMiniTorusLabelEl = document.getElementById('cardMiniTorusLabel');
-  // 08.08.2026, Создатель: «под тор 2 кликабельные надписи — релиз/версия, у релиза 3 зелёных/
-  // 3 жёлтых/3 красных». Отдельная маленькая карточка, не смешиваем с проектами/звёздами.
-  var releaseLabelEl = document.getElementById('releaseLabel'), versionLabelEl = document.getElementById('versionLabel');
+  // 08.08.2026, Создатель: «под тор кликабельная надпись — релиз, 3 зелёных/3 жёлтых/3 красных».
+  // Отдельная маленькая карточка, не смешиваем с проектами/звёздами.
+  // 08.08.2026, Андрей: «версию убери, работаем с релизом» — отдельная карточка «Версия»
+  // (versionCard/VERSION_INFO) убрана целиком, два параллельных документа путали, откуда берутся
+  // расхождения. Метка под тором теперь одна («Релиз»), растёт дробно (4.2 → 4.21 → 4.22…) с каждой
+  // локальной правкой, вместо отдельного счётчика «Версия N» — при реальном деплое это же число
+  // становится опубликованным номером релиза.
+  var releaseLabelEl = document.getElementById('releaseLabel');
   var releaseCardEl = document.getElementById('releaseCard');
   var releaseCardTitleEl = document.getElementById('releaseCardTitle'), releaseCardBodyEl = document.getElementById('releaseCardBody');
   var releaseReadinessEl = document.getElementById('releaseReadiness');
+  var releaseSessionSummaryEl = document.getElementById('releaseSessionSummary');
   // 08.08.2026, Создатель: «нажимаю релиз — сразу 2 карточки: слева презентация, справа рабочий
-  // список» — презентация живёт в той же модалке releaseCard, вторая панель. Версия — отдельная
-  // простая модалка (versionCard), сюда не входит.
+  // список» — презентация живёт в той же модалке releaseCard, вторая панель.
   var presentationBodyEl = document.getElementById('presentationBody');
-  var versionCardEl = document.getElementById('versionCard');
-  var versionCardTitleEl = document.getElementById('versionCardTitle'), versionCardBodyEl = document.getElementById('versionCardBody');
-  var versionSessionSummaryEl = document.getElementById('versionSessionSummary');
-  // 08.08.2026, Создатель: «версия — своя карточка, вижу только я» — та же пара Презентация/Процесс,
-  // что и у Релиза/любой карточки, но про сам локальный порт (техническая сторона).
-  var versionPresentationBodyEl = document.getElementById('versionPresentationBody');
   function showHolePhoto(p){
     holePhotoEl.src = PARTICIPANT_PHOTOS[p.photo] || '';
     holePhotoEl.classList.toggle('leader', !!p.leader);
@@ -524,12 +523,11 @@
   function activateProject(i){
     var proj = PROJECTS[i];
     wordState = i + 1;
-    // 08.08.2026, Создатель: «релиз и версия видны только на главной странице BestOfficial, при
-    // переходе должны просто исчезать — чтобы вернуться, нужно перезагрузить страницу». activateProject —
+    // 08.08.2026, Создатель: «релиз видна только на главной странице BestOfficial, при переходе
+    // должна просто исчезать — чтобы вернуться, нужно перезагрузить страницу». activateProject —
     // общие ворота для ЛЮБОГО перехода (клик по слову, goHome, участники, Lunora идёт через Best),
-    // поэтому одно место гасит обе кнопки навсегда до следующей полной перезагрузки страницы.
+    // поэтому одно место гасит кнопку навсегда до следующей полной перезагрузки страницы.
     releaseLabelEl.style.display = 'none';
-    versionLabelEl.style.display = 'none';
     // 06.08.2026: Lunora больше не бывает в PROJECTS вообще (убрана из цепочки Best), так что
     // proj.word==='Lunora' здесь больше не встречается — но lunoraMode на всякий случай гасим
     // всегда, если вдруг сюда попали не через enterLunora() (например, клик по обычному слову).
@@ -826,35 +824,21 @@
   // совсем, не задача проекта. «Аудит не важен, когда-нибудь вернусь к аудитам» — тоже убран из
   // активного списка, та же логика, что и ушедшие участники/руководители: не сейчас, не задача
   // этого релиза.
-  // 08.08.2026, Андрей: «Олеся настаивает на названии Rush вместо Valmont — да будет так, покажи
-  // как это будет в следующей версии, Релиз 4.2». Переименование — готовый, самостоятельный повод
-  // для ещё одного закрепляющего релиза (как 4.1), не дожидаясь полного Релиза 5 (световой элемент
-  // тора BestOfficial всё ещё не найден — единственный настоящий открытый вопрос для 5).
+  // 08.08.2026, Андрей: «я не пойму, откуда ошибки... версию убери, работаем с релизом» — два
+  // параллельных документа (Релиз + Версия) путали, откуда берутся расхождения. VERSION_INFO и вся
+  // карточка «Версия» удалены целиком, всё живёт здесь, в одном месте. Метка под тором растёт
+  // дробно (4.2 → 4.21 → 4.22…) с каждой правкой — вместо отдельного счётчика «Версия N», см.
+  // стандарт в CLAUDE.md («Release-label standard»). `session` — короткий якорь «о чём был
+  // разговор / что сделано», та же идея, что раньше была только в Версии, теперь здесь.
   var RELEASE_INFO = {
     title: 'Процесс',
-    readyStatus: 'ready',
-    readiness: '🟢 Готовим Релиз 4.2 — Valmont переименован в Rush, ещё один закрепляющий момент.',
-    yellow: [],
-    red: []
-  };
-  // 08.08.2026, Создатель поправил: «эталона нет — неправда, эталон на GitHub и на Vercel». Пустая
-  // презентация ошибочно читалась как «ничего ещё не подтверждено» — на самом деле эталон уже есть,
-  // это опубликованный Релиз 4 (bestdreambot/BestOfficial + bestofficial.vercel.app), просто он не
-  // повторяется здесь текстом (см. комментарий выше про «не дублировать Релиз 4»). Явно так и написано.
-  // 07.08.2026, Андрей: «нажимаю версию — сразу вижу, о чём был прошлый разговор, что сделано после
-  // него, что нужно уточнить, что вообще ещё не сделано — полная картина». Добавлено поле `session`
-  // (короткий якорь-заголовок «о чём был разговор»), green/yellow/red теперь читаются конкретно как
-  // «сделано с прошлой версии» / «нужно уточнить у Андрея» / «ещё вообще не начато». Обновлять оба
-  // поля (session + списки) при каждом бампе версии — не только код, но и этот дневник.
-  var VERSION_INFO = {
-    title: 'Процесс',
-    session: '08.08.2026 — Олеся настояла на названии Rush вместо Valmont, Андрей подтвердил: ' +
-      '«да будет так». Переименовано везде в коде (слово, палитра, роль Олеси), готовим Релиз 4.2 ' +
-      'как ещё один закрепляющий момент, отдельно от полного Релиза 5.',
-    green: [
-      'Эталон уже опубликован — GitHub (bestdreambot/BestOfficial) и bestofficial.vercel.app, это и есть Релиз 4.1',
-      'Valmont переименован в Rush — слово, палитра, роль Олеси (руководитель Rush + Rock Party) обновлены во всех местах кода. TikTok-адрес не менялся (@best.valmont.man) — это отдельный вопрос, не задан'
-    ],
+    session: '08.08.2026 — Релиз 4.3 выпущен: карточка «Версия» убрана целиком, теперь один ' +
+      'документ — Релиз (метка растёт дробно 4.2→4.3…). Exclusive Man: адрес исправлен на ' +
+      'best_exclusive.man (была опечатка, ссылка не открывалась). Moon: новый цвет — ' +
+      'сине-фиолетовый, между сиреневым и синим. Готовим Релиз 5 — старые пункты уже ' +
+      'опубликованы, здесь только новое.',
+    readyStatus: 'not-ready',
+    readiness: '🔴 Идёт подготовка к Релизу 5 — ждём одного открытого вопроса ниже.',
     yellow: [
       'По каждому проекту/звезде — какой у них уровень тора (0 / «Бест тор») и в каком цвете — разбираем по одному, не всё разом'
     ],
@@ -891,6 +875,9 @@
   function openReleaseCard(){
     renderPresentation(presentationBodyEl, PRESENTATION_INFO);
     releaseCardTitleEl.textContent = RELEASE_INFO.title;
+    if(releaseSessionSummaryEl){
+      releaseSessionSummaryEl.textContent = RELEASE_INFO.session ? ('📍 ' + RELEASE_INFO.session) : '';
+    }
     if(releaseReadinessEl){
       releaseReadinessEl.textContent = RELEASE_INFO.readiness || '';
       releaseReadinessEl.className = 'release-readiness ' + (RELEASE_INFO.readyStatus || 'not-ready');
@@ -901,31 +888,10 @@
     releaseCardEl.classList.add('open'); releaseCardEl.setAttribute('aria-hidden','false');
   }
   function closeReleaseCard(){ releaseCardEl.classList.remove('open'); releaseCardEl.setAttribute('aria-hidden','true'); }
-  function openVersionCard(){
-    versionSessionSummaryEl.textContent = VERSION_INFO.session ? ('📍 ' + VERSION_INFO.session) : '';
-    renderPresentation(versionPresentationBodyEl, VERSION_INFO.green);
-    versionCardTitleEl.textContent = VERSION_INFO.title;
-    versionCardBodyEl.innerHTML =
-      statusGroup('🟡','Нужно уточнить', VERSION_INFO.yellow) +
-      statusGroup('🔴','Ещё не сделано', VERSION_INFO.red);
-    versionCardEl.classList.add('open'); versionCardEl.setAttribute('aria-hidden','false');
-  }
-  function closeVersionCard(){ versionCardEl.classList.remove('open'); versionCardEl.setAttribute('aria-hidden','true'); }
   releaseLabelEl.addEventListener('click', openReleaseCard);
   releaseLabelEl.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openReleaseCard(); } });
-  // 08.08.2026, Создатель: «релиз будут видеть все версии, версию буду видеть только я локально» —
-  // прячем «Версия» на публичном хосте (Vercel), оставляем только на локальном сервере разработки.
-  var isLocalHost = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
-  if(isLocalHost){
-    versionLabelEl.addEventListener('click', openVersionCard);
-    versionLabelEl.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openVersionCard(); } });
-  } else {
-    versionLabelEl.style.display = 'none';
-  }
   releaseCardEl.querySelector('.card-backdrop').addEventListener('click', closeReleaseCard);
   releaseCardEl.querySelector('.card-close').addEventListener('click', closeReleaseCard);
-  versionCardEl.querySelector('.card-backdrop').addEventListener('click', closeVersionCard);
-  versionCardEl.querySelector('.card-close').addEventListener('click', closeVersionCard);
   // LEFT = «Звёзды» / контекст. Эталон app.js handleFom2Activate (репо BestOfficial):
   //   • уже в режиме звёзд → карточка ТЕКУЩЕЙ звезды
   //   • на проекте ПОСЛЕ Best (wordState >= 2) → карточка этого проекта
@@ -972,7 +938,7 @@
   navLunora.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); handleNavLunora(); } });
   cardEl.querySelector('.card-backdrop').addEventListener('click', closeCard);
   cardEl.querySelector('.card-close').addEventListener('click', closeCard);
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeCard(); closeReleaseCard(); closeVersionCard(); } });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeCard(); closeReleaseCard(); } });
 
   // 06.08.2026: убран безусловный таймер показа mktor от момента загрузки (было 2200мс всегда).
   // На главной BestOfficial (до первого клика по слову) mktor теперь не появляется вовсе — см.
