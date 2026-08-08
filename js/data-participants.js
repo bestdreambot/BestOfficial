@@ -58,7 +58,7 @@ var PARTICIPANT_CHAIN = [
   { word:'Виктория', aria:'Виктория. Участник BEST.', world:'p_viktoria', handle:'tori_fomi2383',        photo:'torri', leads:['hit.parad official'] },
   // 07.08.2026, Создатель: «Олеся вернулась на проект... добавь после Вика Торри». TikTok-адрес
   // подтверждён следующим сообщением: @schastie_moe_.
-  { word:'Олеся',    aria:'Олеся. Участник BEST.',    world:'p_olesya',   handle:'schastie_moe_',         photo:'olesya', leads:['Valmont','Rock Party'] },
+  { word:'Олеся',    aria:'Олеся. Участник BEST.',    world:'p_olesya',   handle:'schastie_moe_',         photo:'olesya', leads:['Rush','Rock Party'] },
   { word:'Валя',     aria:'Валя. Участник BEST.',     world:'p_valya',    handle:'izbalovannoe..chudo',   photo:'valya' },
   { word:'Ира',      aria:'Ира. Участник BEST.',      world:'p_ira',      handle:'26koroleva_ada',       photo:'ira', leads:['Moon'] },
   { word:'Виталий',  aria:'Виталий. Участник BEST.',  world:'p_vitali',   handle:'mostwanted_86',        photo:'vitali' },

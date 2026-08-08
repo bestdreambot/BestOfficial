@@ -1,6 +1,6 @@
 // Строит 6-стоповую палитру (ярко→тёмно) из одного базового цвета — используется для проектов,
 // где известен только приблизительный цвет направления (реестр projects/BEST/*), а не готовый
-// вручную подобранный градиент, как у best/aleorix/jelly/valmont/animix.
+// вручную подобранный градиент, как у best/aleorix/jelly/rush/animix.
 function shades(r,g,b){
   function mix(t){ return [Math.round(r+(255-r)*t), Math.round(g+(255-g)*t), Math.round(b+(255-b)*t)]; }
   function dim(t){ return [Math.round(r*t), Math.round(g*t), Math.round(b*t)]; }
@@ -20,8 +20,9 @@ var WORLDS = {
   aleorix: [[255,240,255],[235,180,255],[195,90,255], [150,30,255], [95,10,200],  [35,4,70]],
   // Jelly — жёлтый, чище и ярче тёплого золота best (@jelly.show TikTok).
   jelly:   [[255,255,225],[255,245,120],[255,220,40], [230,180,0],  [160,120,0],  [60,45,0]],
-  // Valmont — чистый красный, не оранжевый tomato и не тёмный maroon (@best.valmont.man TikTok).
-  valmont: [[255,225,220],[255,140,120],[255,60,40],  [220,20,10],  [140,10,5],   [50,4,2]],
+  // Rush (было Valmont, переименовано 08.08.2026 по слову Олеси) — чистый красный, не оранжевый
+  // tomato и не тёмный maroon. TikTok-адрес не менялся (@best.valmont.man).
+  rush:    [[255,225,220],[255,140,120],[255,60,40],  [220,20,10],  [140,10,5],   [50,4,2]],
   // Animix — светло-сиреневый (по слову Создателя), светлее и мягче насыщенного Aleorix, чтобы не сливались рядом в цепочке.
   animix:  [[250,245,255],[225,210,255],[195,175,255],[165,140,240],[110,90,180], [45,35,80]],
   // Остальные проекты BEST (реестр projects/BEST/*, 30.07.2026) — по слову Создателя «добавь всех
@@ -37,7 +38,7 @@ var WORLDS = {
   dualis:         shades(130,60,220),
   exclusive_stars:shades(190,220,90),
   // Exclusive Man — найден Андреем 07.08.2026 (@best_exlusive.man), мужской проект: серо-стальной,
-  // приглушённый, чтобы не путать с зелёным Exclusive Stars и не дублировать красный Valmont.
+  // приглушённый, чтобы не путать с зелёным Exclusive Stars и не дублировать красный Rush.
   exclusive_man:  shades(100,110,130),
   finger_dance:   shades(255,120,140),
   // Dances — электрический лаймовый, энергия движения, отдельный от Finger Dance (розовый).
@@ -53,7 +54,7 @@ var WORLDS = {
   noira:          shades(40,80,200),
   // Lunora — объединяющий вход для Noira+Zaryum (06.08.2026). Сначала был лунный сине-розовый
   // блend, Создатель попросил перекрасить в бордовый — глубокий винный, не путать с maroon
-  // grand_show (тот суше/коричневее) и не с ярким valmont.
+  // grand_show (тот суше/коричневее) и не с ярким rush.
   lunora:         shades(120,20,45),
   past_legends:   shades(180,140,70),
   tiretok:        shades(170,175,185),
@@ -75,10 +76,10 @@ var WORLDS = {
   p_ira:      shades(110,140,255),
   p_masha:    shades(255,230,90),
   p_viktoria: shades(70,210,210),
-  // Олеся — тёплый розово-коралловый, перекликается с красным Valmont, но не дублирует его.
+  // Олеся — тёплый розово-коралловый, перекликается с красным Rush, но не дублирует его.
   p_olesya:   shades(235,80,110),
   p_alina:    shades(255,90,160),
   p_viva:     shades(210,90,220),
   p_vitali:   shades(200,120,70)
 };
-var WORLD_ORDER = ['freex','ya','best','odp','tomato','nebula','maroon','lavender','violet','aleorix','jelly','valmont','animix'];
+var WORLD_ORDER = ['freex','ya','best','odp','tomato','nebula','maroon','lavender','violet','aleorix','jelly','rush','animix'];

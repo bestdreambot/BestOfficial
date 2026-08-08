@@ -23,7 +23,12 @@ var PROJECTS = [
   { word:'Best',            aria:'Best. Проект.',            world:'best',            tiktok:'best.show.official', ring:'portal',   ringMs:1000, fx:'gold_enter',  bright:true },
   { word:'Aleorix',         aria:'Aleorix. Проект.',         world:'aleorix',         tiktok:'aleorix0',           ring:'dissolve', ringMs:1300, fx:'soft_only',   bright:true },
   { word:'Anibrox',         aria:'Anibrox. Проект.',         world:'anibrox',         tiktok:'best.anibrox',       ring:'portal',   ringMs:1000, fx:'soft_only'   },
-  { word:'Valmont',         aria:'Valmont. Проект.',         world:'valmont',         tiktok:'best.valmont.man',   ring:'burst',    ringMs:900,  fx:'no_fx'       },
+  // 08.08.2026, Андрей: «Олеся настаивает на названии Rush вместо Valmont — да будет так». Название
+  // (word/aria/world-палитра) переименовано полностью. TikTok-адрес (`best.valmont.man`) НЕ трогал —
+  // это реальный внешний аккаунт, смена имени внутри продукта не значит автоматическую смену самого
+  // TikTok-хэндла; если Олеся сменит и аккаунт, нужно отдельное прямое слово Андрея (правило про
+  // якорные данные, см. CLAUDE.md).
+  { word:'Rush',            aria:'Rush. Проект.',            world:'rush',            tiktok:'best.valmont.man',   ring:'burst',    ringMs:900,  fx:'no_fx'       },
   { word:'Jelly',           aria:'Jelly. Проект.',           world:'jelly',           tiktok:'jelly.show',         ring:'wipe',     ringMs:1100, fx:'flash_warm'  },
   { word:'Dualis',          aria:'Dualis. Проект.',          world:'dualis',          tiktok:'best.duet.show',     ring:'dissolve', ringMs:1300, fx:'flash_warm'  },
   { word:'Animix',          aria:'Animix. Проект.',          world:'animix',          tiktok:'best.anime.show',    ring:'spiral',   ringMs:1200, fx:'streak_only' },
