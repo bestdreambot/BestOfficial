@@ -302,6 +302,16 @@
   .presentation-item{
     margin:8px 0; font-family:Georgia, serif; font-size:13px; line-height:1.5; color:rgba(230,220,200,.92);
   }
+  /* 08.08.2026, Андрей (Релиз 4.4): «это хронология, нужна презентация — структурируй» — темы
+     внутри презентации Релиза/BestOfficial, тот же приём, что release-group-title в Процессе
+     справа, только тёплым золотым (презентация — эталон, не рабочий список). */
+  .presentation-group{ margin:16px 0 0; text-align:left; }
+  .presentation-group:first-of-type{ margin-top:0; }
+  .presentation-group-title{
+    font-family:"Cinzel", serif; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:rgba(255,214,140,.8); margin-bottom:6px; padding-bottom:4px;
+    border-bottom:1px solid rgba(255,214,140,.14);
+  }
   /* 08.08.2026, Андрей: «это действительно кнопка» — факт в презентации (руководитель проекта,
      ник в TikTok...) может вести на другую карточку/тор или на TikTok, тогда это кнопка, не
      просто строка: курсор, стрелка-намёк, подсветка на hover/focus, та же логика, что у
@@ -375,7 +385,7 @@
        «Версия» удалена целиком (два параллельных документа путали, откуда берутся расхождения).
        Одна метка «Релиз» — статус всего проекта, видна всем, растёт дробно (4.2 → 4.21 → 4.22…) с
        каждой локальной правкой; см. стандарт в CLAUDE.md («Release-label standard»). -->
-  <span id="releaseLabel" class="release-label" role="button" tabindex="0">Релиз 4.31</span>
+  <span id="releaseLabel" class="release-label" role="button" tabindex="0">Релиз 4.4</span>
   <!-- 08.08.2026, Создатель: «нажимаю на релиз — сразу 2 карточки: слева презентация (аккуратно,
        что уже точно сделано), справа рабочий список (сюда буду добавлять/менять)». -->
   <div id="releaseCard" class="card" role="dialog" aria-modal="true" aria-hidden="true">
